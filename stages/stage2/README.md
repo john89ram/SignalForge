@@ -89,4 +89,37 @@ stages/stage2/audit_logs/stage2_run_<timestamp>.log
 stages/stage2/audit_logs/stage2_run_<timestamp>.jsonl
 ```
 
-The log records per-symbol progress. The JSONL audit row records row counts, tier distribution, verdict distribution, elapsed runtime, and input/output paths.
+The human log records per-symbol progress with row count, percent complete, symbol, tier, verdict, Stage 3 eligibility, HP remaining/total, total damage, weak count, and bad count. The JSONL audit file records one `stage2_symbol_complete` event per symbol plus a final `stage2_run_complete` summary with row counts, tier distribution, verdict distribution, elapsed runtime, and input/output paths.
+
+## Latest offline contract run
+
+Run ID: `20260525T161635Z`
+
+Command:
+
+```bash
+set -o pipefail
+python -u stages/stage2/code/run_stage2.py \
+  stages/stage2/input/Stage1_PASS.csv \
+  --offline-input-only \
+  --workers 4 \
+  2>&1 | tee /tmp/signalforge_stage2/stage2_progress_20260525T161635Z.log
+```
+
+Artifacts committed for analysis:
+
+```text
+stages/stage2/output/Stage2_Report.csv
+stages/stage2/audit_logs/stage2_run_20260525T161635Z.log
+stages/stage2/audit_logs/stage2_run_20260525T161635Z.jsonl
+```
+
+Verified results:
+
+- Input rows: `71`
+- Output rows: `71`
+- Output columns: `43`
+- Verdict counts: `PASS=71`
+- Tier counts: `Diamond=21`, `Strong=38`, `Standard=12`, `Watch=0`, `Eliminated=0`
+- JSONL audit coverage: `71` per-symbol events plus `1` run summary
+- Human log coverage: `71` per-symbol progress lines plus run metadata and summary
