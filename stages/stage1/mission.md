@@ -35,3 +35,16 @@ Stage 1 / Step 3 enriches the Step 2 exchange batches from Barchart:
 6. Keep retry and unresolved rows visible in CSV outputs and audit logs.
 
 This step is a data collection/enrichment step only. It should not silently drop symbols or turn a missing Barchart field into a trade-quality verdict.
+
+## Step 4 contract
+
+Stage 1 / Step 4 completes the mechanical Stage 1 output:
+
+1. Merge `NASDAQ_barchart_enriched.csv` and `NYSE_barchart_enriched.csv` back into one enriched CSV.
+2. Parse `barchart_implied_volatility` as the final premium gate.
+3. Pass only rows with implied volatility `>= 75`.
+4. Fail rows below `75` or rows missing implied volatility, with an explicit fail reason.
+5. Write the merged CSV, `Stage1_PASS.csv`, `Stage1_FAIL.csv`, and a JSONL audit event.
+6. Copy the completed `Stage1_PASS.csv` into `stages/stage2/input/Stage1_PASS.csv`.
+
+This is still a mechanical filter. It does not make valuation, sentiment, or business-quality judgments.

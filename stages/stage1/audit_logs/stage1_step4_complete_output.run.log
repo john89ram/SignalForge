@@ -1,0 +1,11 @@
+Stage 1 Step 4 complete output finished
+- Input rows: 757
+- PASS rows: 121
+- FAIL rows: 636
+- IV floor: 75.0
+- Merged CSV: stages/stage1/output/stage1_step4_merged_barchart_enriched.csv
+- Stage 1 PASS CSV: stages/stage1/output/Stage1_PASS.csv
+- Stage 1 FAIL CSV: stages/stage1/output/Stage1_FAIL.csv
+- Stage 2 input copy: stages/stage2/input/Stage1_PASS.csv
+- Audit log: stages/stage1/audit_logs/stage1_step4_complete_output.jsonl
+- Runtime seconds: 0.03

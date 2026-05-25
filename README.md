@@ -23,6 +23,9 @@ See [`docs/project-layout.md`](docs/project-layout.md) for the canonical layout.
 ## Current implementation map
 
 - **Stage 1 Step 1**: `stages/stage1/code/step1_rough_filter.py`
+- **Stage 1 Step 2**: `stages/stage1/code/step2_exchange_split.py`
+- **Stage 1 Step 3**: `stages/stage1/code/step3_barchart_enrichment.py`
+- **Stage 1 Step 4**: `stages/stage1/code/step4_complete_stage1_output.py`
 - **Legacy / support code**: `screener.py`, `market_cap_census.py`, `nasdaq_market_cap_census.py`, `nasdaq_summary_archive.py`
 - **Stage 2 code**: `stage2_report.py`, `exchange_enrichment_workflow.py`
 - **Stage 3 / orchestration**: `full_market_pipeline.py`
@@ -73,6 +76,27 @@ python -m stages.stage1.code.step3_barchart_enrichment \
   --max-repair-rounds 2 \
   --delay-seconds 0.25
 ```
+
+## Stage 1 Step 4
+
+Merge the enriched exchange CSVs back into one Stage 1 universe, filter to the final Stage 1 implied-volatility floor, write audit artifacts, and copy the completed pass CSV into the Stage 2 input folder:
+
+```bash
+python -m stages.stage1.code.step4_complete_stage1_output \
+  --input-dir stages/stage1/output/barchart_enrichment \
+  --output-dir stages/stage1/output \
+  --stage2-input-dir stages/stage2/input \
+  --audit-log stages/stage1/audit_logs/stage1_step4_complete_output.jsonl \
+  --min-implied-volatility 75
+```
+
+Canonical outputs:
+
+- `stages/stage1/output/stage1_step4_merged_barchart_enriched.csv`
+- `stages/stage1/output/Stage1_PASS.csv`
+- `stages/stage1/output/Stage1_FAIL.csv`
+- `stages/stage2/input/Stage1_PASS.csv`
+- `stages/stage1/audit_logs/stage1_step4_complete_output.jsonl`
 
 ## Run it
 

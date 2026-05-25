@@ -1,6 +1,6 @@
 # Stage 1 Verdict
 
-Stage 1 is in progress.
+Stage 1 is mechanically complete for the current checked universe.
 
 ## Completed checkpoints
 
@@ -11,9 +11,29 @@ Stage 1 is in progress.
   - NYSE rows: 477
   - NASDAQ rows: 280
   - Unknown exchange rows: 0
+- Step 3 Barchart enrichment is implemented and has been run against the full exchange split.
+  - Enriched rows: 757
+  - Final unresolved required-field rows after two repair rounds: 18
+- Step 4 completed Stage 1 output is implemented and run.
+  - Merged enriched rows: 757
+  - Final Stage 1 PASS rows with `barchart_implied_volatility >= 75`: 121
+  - Final Stage 1 FAIL rows: 636
+  - Fail reasons: 627 below IV floor; 9 missing implied volatility.
+  - It writes `Stage1_PASS.csv`, `Stage1_FAIL.csv`, a merged audit CSV, a JSONL audit event, and a Stage 2 input copy.
 
 ## Current verdict
 
-Stage 1 Step 1 and Step 2 are mechanically passing for the current local archive. The exchange split preserves all 757 rough survivors and only reorganizes them for downstream enrichment.
+Stage 1 is now a deterministic mechanical funnel:
 
-Stage 1 Step 3 is implemented as the Barchart enrichment step with a bounded two-round repair loop. A full production run should be paced with `--delay-seconds` to reduce stop-out risk; smoke runs can use `--limit-per-exchange`.
+1. Raw local market archive -> rough $1B / $10-$75 / 1M-volume filter.
+2. Rough survivors -> exchange batches.
+3. Exchange batches -> Barchart enrichment with bounded repair.
+4. Enriched rows -> final implied-volatility filter and Stage 2 handoff.
+
+The completed Stage 1 handoff artifact is:
+
+`stages/stage2/input/Stage1_PASS.csv`
+
+Rows that fail the final implied-volatility floor, or rows where implied volatility is missing, are retained in:
+
+`stages/stage1/output/Stage1_FAIL.csv`

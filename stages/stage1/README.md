@@ -92,3 +92,35 @@ python -m stages.stage1.code.step3_barchart_enrichment \
 ```
 
 For a safe smoke test, add `--limit-per-exchange 2`.
+
+## Stage 1 / Step 4 — completed Stage 1 output
+
+**Goal:** merge the Barchart-enriched exchange CSVs back into one enriched Stage 1 universe, then apply the final implied-volatility floor.
+
+Process:
+
+1. Read `NASDAQ_barchart_enriched.csv` and `NYSE_barchart_enriched.csv` from Step 3.
+2. Write a merged enriched CSV for auditability.
+3. Keep rows with `barchart_implied_volatility >= 75`.
+4. Write explicit pass/fail CSVs with Step 4 verdict fields.
+5. Append a JSONL audit event.
+6. Copy `Stage1_PASS.csv` into the Stage 2 input folder.
+
+Canonical outputs:
+
+- `stages/stage1/output/stage1_step4_merged_barchart_enriched.csv`
+- `stages/stage1/output/Stage1_PASS.csv`
+- `stages/stage1/output/Stage1_FAIL.csv`
+- `stages/stage1/audit_logs/stage1_step4_complete_output.jsonl`
+- `stages/stage2/input/Stage1_PASS.csv`
+
+Run Step 4:
+
+```bash
+python -m stages.stage1.code.step4_complete_stage1_output \
+  --input-dir stages/stage1/output/barchart_enrichment \
+  --output-dir stages/stage1/output \
+  --stage2-input-dir stages/stage2/input \
+  --audit-log stages/stage1/audit_logs/stage1_step4_complete_output.jsonl \
+  --min-implied-volatility 75
+```

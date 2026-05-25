@@ -87,3 +87,27 @@ Notes:
 - `--delay-seconds` spaces calls out to reduce stop-out risk.
 - `--limit-per-exchange` is available for smoke tests.
 - Expected move is captured when Barchart exposes it, but it is not required for completion because many overview pages omit it.
+
+## Step 4 completed output
+
+Module: `stages.stage1.code.step4_complete_stage1_output`
+
+Purpose:
+
+- Consume the Step 3 Barchart-enriched NASDAQ and NYSE CSVs.
+- Merge both exchanges back into one enriched Stage 1 CSV.
+- Apply the final Stage 1 implied-volatility floor of `>= 75`.
+- Write `Stage1_PASS.csv` and `Stage1_FAIL.csv` with explicit verdict/fail-reason fields.
+- Append a JSONL audit event.
+- Copy the completed pass CSV into `stages/stage2/input/Stage1_PASS.csv`.
+
+Run:
+
+```bash
+python -m stages.stage1.code.step4_complete_stage1_output \
+  --input-dir stages/stage1/output/barchart_enrichment \
+  --output-dir stages/stage1/output \
+  --stage2-input-dir stages/stage2/input \
+  --audit-log stages/stage1/audit_logs/stage1_step4_complete_output.jsonl \
+  --min-implied-volatility 75
+```
