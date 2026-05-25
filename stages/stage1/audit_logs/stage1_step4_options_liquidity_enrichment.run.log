@@ -1,0 +1,8 @@
+Stage 1 Step 4 options-liquidity enrichment finished
+- Input rows: 757
+- Cache-hit rows: 748
+- Live-fetched rows: 9
+- Missing liquidity rows: 9
+- Output CSV: stages/stage1/output/stage1_step4_options_liquidity_enriched.csv
+- Audit log: stages/stage1/audit_logs/stage1_step4_options_liquidity_enrichment.jsonl
+- Runtime seconds: 3.32

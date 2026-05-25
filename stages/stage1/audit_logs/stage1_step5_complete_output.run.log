@@ -1,0 +1,14 @@
+Stage 1 Step 5 complete output finished
+- Input rows: 757
+- PASS rows: 71
+- FAIL rows: 686
+- IV floor: 75.0
+- Options volume floor: 1000
+- Open interest floor: 1000
+- Market cap floor: 1000000000.0
+- Merged CSV: stages/stage1/output/stage1_step5_merged_options_liquidity_enriched.csv
+- Stage 1 PASS CSV: stages/stage1/output/Stage1_PASS.csv
+- Stage 1 FAIL CSV: stages/stage1/output/Stage1_FAIL.csv
+- Stage 2 input copy: stages/stage2/input/Stage1_PASS.csv
+- Audit log: stages/stage1/audit_logs/stage1_step5_complete_output.jsonl
+- Runtime seconds: 0.05

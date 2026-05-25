@@ -17,6 +17,10 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
             "barchart_historical_volatility",
             "barchart_iv_percentile",
             "barchart_iv_rank",
+            "options_volume",
+            "open_interest",
+            "atm_bid_ask_spread",
+            "market_cap",
         ]
         with open(path, "w", encoding="utf-8", newline="") as fh:
             writer = csv.DictWriter(fh, fieldnames=fieldnames)
@@ -40,6 +44,10 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
                         "barchart_historical_volatility": "45",
                         "barchart_iv_percentile": "70",
                         "barchart_iv_rank": "60",
+                        "options_volume": "1500",
+                        "open_interest": "2000",
+                        "atm_bid_ask_spread": "0.20",
+                        "market_cap": "2000000000",
                     },
                     {
                         "symbol": "BBB",
@@ -48,6 +56,10 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
                         "barchart_historical_volatility": "45",
                         "barchart_iv_percentile": "70",
                         "barchart_iv_rank": "60",
+                        "options_volume": "1500",
+                        "open_interest": "2000",
+                        "atm_bid_ask_spread": "0.20",
+                        "market_cap": "2000000000",
                     },
                 ],
             )
@@ -61,6 +73,10 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
                         "barchart_historical_volatility": "45",
                         "barchart_iv_percentile": "70",
                         "barchart_iv_rank": "60",
+                        "options_volume": "999",
+                        "open_interest": "2000",
+                        "atm_bid_ask_spread": "0.20",
+                        "market_cap": "2000000000",
                     },
                     {
                         "symbol": "DDD",
@@ -69,6 +85,10 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
                         "barchart_historical_volatility": "45",
                         "barchart_iv_percentile": "70",
                         "barchart_iv_rank": "60",
+                        "options_volume": "1500",
+                        "open_interest": "",
+                        "atm_bid_ask_spread": "0.20",
+                        "market_cap": "2000000000",
                     },
                 ],
             )
@@ -79,11 +99,12 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
                 stage2_input_dir=stage2_input_dir,
                 audit_log_path=audit_log,
                 min_implied_volatility=75.0,
+                input_files=("NASDAQ_barchart_enriched.csv", "NYSE_barchart_enriched.csv"),
             )
 
             self.assertEqual(result.total_input_rows, 4)
-            self.assertEqual(result.pass_rows, 2)
-            self.assertEqual(result.fail_rows, 2)
+            self.assertEqual(result.pass_rows, 1)
+            self.assertEqual(result.fail_rows, 3)
             self.assertTrue(os.path.exists(result.merged_csv_path))
             self.assertTrue(os.path.exists(result.stage1_pass_csv_path))
             self.assertTrue(os.path.exists(result.stage1_fail_csv_path))
@@ -91,13 +112,19 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
 
             with open(result.stage1_pass_csv_path, "r", encoding="utf-8", newline="") as fh:
                 pass_rows = list(csv.DictReader(fh))
-            self.assertEqual([row["symbol"] for row in pass_rows], ["AAA", "CCC"])
+            self.assertEqual([row["symbol"] for row in pass_rows], ["AAA"])
             self.assertEqual(pass_rows[0]["stage1_step4_verdict"], "PASS")
-            self.assertEqual(pass_rows[1]["stage1_step4_implied_volatility"], "75.0")
 
             with open(result.stage1_fail_csv_path, "r", encoding="utf-8", newline="") as fh:
                 fail_rows = list(csv.DictReader(fh))
-            self.assertEqual([row["stage1_step4_fail_reason"] for row in fail_rows], ["implied_volatility_below_75.0", "missing_implied_volatility"])
+            self.assertEqual(
+                [row["stage1_step4_fail_reason"] for row in fail_rows],
+                [
+                    "implied_volatility_below_75.0",
+                    "options_volume_below_1000",
+                    "missing_implied_volatility | missing_open_interest",
+                ],
+            )
 
             with open(result.stage2_input_csv_path, "r", encoding="utf-8", newline="") as fh:
                 stage2_rows = list(csv.DictReader(fh))
@@ -105,9 +132,11 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
 
             with open(audit_log, "r", encoding="utf-8") as fh:
                 audit_event = json.loads(fh.read().strip())
-            self.assertEqual(audit_event["event"], "stage1_step4_complete_output_complete")
+            self.assertEqual(audit_event["event"], "stage1_step5_complete_output_complete")
             self.assertEqual(audit_event["total_input_rows"], 4)
-            self.assertEqual(audit_event["pass_rows"], 2)
+            self.assertEqual(audit_event["pass_rows"], 1)
+            self.assertEqual(audit_event["min_options_volume"], 1000)
+            self.assertEqual(audit_event["min_open_interest"], 1000)
             self.assertEqual(audit_event["stage2_input_csv_path"], result.stage2_input_csv_path)
 
 
