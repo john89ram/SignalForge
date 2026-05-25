@@ -61,6 +61,19 @@ Current checked split:
 - NYSE: `477`
 - NASDAQ: `280`
 
+## Stage 1 Step 3
+
+Enrich the exchange batches from Barchart, then retry only incomplete rows with a hard two-round cap:
+
+```bash
+python -m stages.stage1.code.step3_barchart_enrichment \
+  --input-dir stages/stage1/output/exchange_splits \
+  --output-dir stages/stage1/output/barchart_enrichment \
+  --audit-log stages/stage1/audit_logs/stage1_step3_barchart_enrichment.jsonl \
+  --max-repair-rounds 2 \
+  --delay-seconds 0.25
+```
+
 ## Run it
 
 ```bash

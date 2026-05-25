@@ -22,3 +22,16 @@ Stage 1 / Step 2 consumes the Step 1 rough survivor CSV and splits it into exact
 2. `NASDAQ.csv`
 
 The split is only an operational batching aid for enrichment. It must preserve all Step 1 survivors and must report any unknown exchange rows instead of silently dropping them.
+
+## Step 3 contract
+
+Stage 1 / Step 3 enriches the Step 2 exchange batches from Barchart:
+
+1. Call Barchart once per stock in each exchange CSV.
+2. Fill every supported Barchart field captured by the parser.
+3. Review required enrichment fields after the first pass.
+4. Retry only rows with missing required fields.
+5. Stop after no more than two repair rounds.
+6. Keep retry and unresolved rows visible in CSV outputs and audit logs.
+
+This step is a data collection/enrichment step only. It should not silently drop symbols or turn a missing Barchart field into a trade-quality verdict.

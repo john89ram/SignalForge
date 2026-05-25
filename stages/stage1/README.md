@@ -58,3 +58,37 @@ Current checked split:
 - Unknown: `0`
 
 This split is for enrichment throughput and debugging only. It does not change trade eligibility.
+
+## Stage 1 / Step 3 — Barchart data enrichment
+
+**Goal:** enrich each exchange batch with Barchart overview data while limiting repeated site calls.
+
+Process:
+
+1. Read `NYSE.csv` and `NASDAQ.csv` from Step 2.
+2. Call Barchart once per symbol and write enriched exchange CSVs.
+3. Review required Barchart fields for missing values.
+4. Retry only incomplete rows.
+5. Stop after at most two repair rounds.
+6. Write retry and unresolved CSVs plus a JSONL audit event.
+
+Canonical outputs:
+
+- `stages/stage1/output/barchart_enrichment/NYSE_barchart_enriched.csv`
+- `stages/stage1/output/barchart_enrichment/NASDAQ_barchart_enriched.csv`
+- `stages/stage1/output/barchart_enrichment/barchart_retry_queue.csv`
+- `stages/stage1/output/barchart_enrichment/barchart_unresolved.csv`
+- `stages/stage1/audit_logs/stage1_step3_barchart_enrichment.jsonl`
+
+Run Step 3:
+
+```bash
+python -m stages.stage1.code.step3_barchart_enrichment \
+  --input-dir stages/stage1/output/exchange_splits \
+  --output-dir stages/stage1/output/barchart_enrichment \
+  --audit-log stages/stage1/audit_logs/stage1_step3_barchart_enrichment.jsonl \
+  --max-repair-rounds 2 \
+  --delay-seconds 0.25
+```
+
+For a safe smoke test, add `--limit-per-exchange 2`.

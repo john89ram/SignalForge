@@ -15,3 +15,5 @@ Stage 1 is in progress.
 ## Current verdict
 
 Stage 1 Step 1 and Step 2 are mechanically passing for the current local archive. The exchange split preserves all 757 rough survivors and only reorganizes them for downstream enrichment.
+
+Stage 1 Step 3 is implemented as the Barchart enrichment step with a bounded two-round repair loop. A full production run should be paced with `--delay-seconds` to reduce stop-out risk; smoke runs can use `--limit-per-exchange`.

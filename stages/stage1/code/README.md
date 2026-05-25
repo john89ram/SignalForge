@@ -50,3 +50,40 @@ Current checked output:
 - NYSE: 477 rows
 - NASDAQ: 280 rows
 - Unknown: 0 rows
+
+## Step 3 Barchart enrichment
+
+Module: `stages.stage1.code.step3_barchart_enrichment`
+
+Purpose:
+
+- Consume the Step 2 exchange split CSVs.
+- Call Barchart for every symbol in each split.
+- Fill supported Barchart fields:
+  - implied volatility
+  - historical volatility
+  - IV percentile
+  - IV rank
+  - IV high / low
+  - expected move
+- Review missing fields after the first pass.
+- Retry only incomplete rows, capped at two repair rounds.
+- Write enriched, retry queue, unresolved, and audit-log artifacts.
+
+Run:
+
+```bash
+python -m stages.stage1.code.step3_barchart_enrichment \
+  --input-dir stages/stage1/output/exchange_splits \
+  --output-dir stages/stage1/output/barchart_enrichment \
+  --audit-log stages/stage1/audit_logs/stage1_step3_barchart_enrichment.jsonl \
+  --max-repair-rounds 2 \
+  --delay-seconds 0.25
+```
+
+Notes:
+
+- `--max-repair-rounds` is capped at 2 to avoid unbounded repeated site calls.
+- `--delay-seconds` spaces calls out to reduce stop-out risk.
+- `--limit-per-exchange` is available for smoke tests.
+- Expected move is captured when Barchart exposes it, but it is not required for completion because many overview pages omit it.
