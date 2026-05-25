@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "market-funnel"
+version = "0.1.0"
+description = "Premium-first market funnel scanner and stage review pipeline"
+requires-python = ">=3.11"
+
+[tool.setuptools]
+py-modules = [
+  "exchange_enrichment_workflow",
+  "exchange_master_list",
+  "full_market_pipeline",
+  "market_cap_census",
+  "nasdaq_market_cap_census",
+  "nasdaq_summary_archive",
+  "pipeline_logging",
+  "raw_stock_archive",
+  "screener",
+  "stage2_report",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

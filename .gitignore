@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Generated artifacts
+runs/
+raw_stock_archive/
+exchange_enrichment_runs/
+exchange_splits/
+master_lists/
+nasdaq_summary_archive/
