@@ -2,7 +2,7 @@
 
 **Author:** Hermes Gatekeeper (Auditor)
 **Date:** 2026-05-25
-**Revision:** 2 — corrected Stage 2 input column names after handoff review
+**Revision:** 3 — constructor fix + defensive kill parsing + eligibility guard (Hermes review)
 **Status:** Ready to build — all dependencies confirmed present in codebase
 
 ---
@@ -34,11 +34,12 @@ All of the following are production-ready in `screener.py`. Import them directly
 from screener import (
     TickerAnalysis,
     QuoteSnapshot,
+    BarchartSnapshot,
+    OptionsSnapshot,
     SECFacts,
     load_sec_companyfacts,
     parse_finviz_quote,
     stage3_analysis,
-    stage3_share_count,
     summary_verdict,
     HTTP,
 )
@@ -108,6 +109,13 @@ def _get_kills_text(row: dict) -> str:
 def _get_flags_text(row: dict) -> str:
     """Resolve WEAK verdict text from actual or aliased column name."""
     return row.get("stage2_flags") or row.get("stage2_weak_text", "")
+
+def _is_stage3_eligible(row: dict) -> bool:
+    """Return True if this Stage 2 row should be processed by Stage 3."""
+    tier = _get_tier(row)
+    eligible_text = str(row.get("eligible_for_stage3", "TRUE")).strip().upper()
+    eligible = eligible_text not in {"FALSE", "0", "NO", "N"}
+    return tier != "Eliminated" and eligible
 ```
 
 ---
@@ -125,19 +133,28 @@ def _analysis_from_stage2_row(row: dict, http: HTTP) -> TickerAnalysis:
     finviz_html = http.get(f"https://finviz.com/quote.ashx?t={symbol}").text
     q = parse_finviz_quote(finviz_html, symbol)
 
-    analysis = TickerAnalysis(symbol=symbol, quote=q)
+    analysis = TickerAnalysis(
+        symbol=symbol,
+        quote=q,
+        barchart=BarchartSnapshot(),
+        options=OptionsSnapshot(),
+    )
     analysis.stage1_pass = True  # Only eligible names reach Stage 3
 
     # CRITICAL: populate stage2_kills from pipe-delimited bad text BEFORE calling summary_verdict()
     # Use stage2_bad_count as the authoritative count; parse text for detail if present.
     bad_text = _get_kills_text(row)
-    bad_count = int(row.get("stage2_bad_count", 0) or 0)
-    if bad_text:
-        parsed_kills = [k.strip() for k in bad_text.split("|") if k.strip()]
-        # Trust the parsed list if count agrees; fall back to count-based placeholder if not
-        analysis.stage2_kills = parsed_kills if len(parsed_kills) == bad_count else ["kill"] * bad_count
+    parsed_kills = [k.strip() for k in bad_text.split("|") if k.strip()] if bad_text else []
+    raw_bad_count = row.get("stage2_bad_count")
+    bad_count = int(raw_bad_count) if raw_bad_count not in (None, "") else None
+    if bad_count is None:
+        analysis.stage2_kills = parsed_kills
+    elif parsed_kills and len(parsed_kills) == bad_count:
+        analysis.stage2_kills = parsed_kills
+    elif bad_count > 0:
+        analysis.stage2_kills = parsed_kills if len(parsed_kills) >= bad_count else ["kill"] * bad_count
     else:
-        analysis.stage2_kills = ["kill"] * bad_count
+        analysis.stage2_kills = []
 
     flags_text = _get_flags_text(row)
     analysis.stage2_flags = [f.strip() for f in flags_text.split("|") if f.strip()] if flags_text else []
@@ -270,7 +287,8 @@ Emit four JSONL event types to `stages/stage3/audit_logs/stage3_run_<timestamp>.
   "total_eligible": 65,
   "tiers_requested": ["Diamond", "Strong", "Standard", "Watch"],
   "min_verdicts": 5,
-  "workers": 2
+  "workers": 2,
+  "input_tier_counts": {"Diamond": 6, "Strong": 15, "Standard": 27, "Watch": 17, "Eliminated": 6}
 }
 ```
 
