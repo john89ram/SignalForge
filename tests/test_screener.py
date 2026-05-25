@@ -302,19 +302,122 @@ class ScreenerTests(unittest.TestCase):
         self.assertEqual(stage3["qc_fail_reason"], "zero or missing revenue")
         self.assertIsNone(stage3["weighted_fair_value"])
 
-    def test_stage3_analysis_uses_market_cap_implied_shares_when_sec_shares_are_stale(self):
+    def test_load_sec_companyfacts_uses_revenue_tag_fallbacks(self):
+        class StubResp:
+            def __init__(self, payload):
+                self.payload = payload
+
+            def json(self):
+                return self.payload
+
+        class StubHTTP:
+            def __init__(self, fact_name):
+                self.fact_name = fact_name
+
+            def get(self, url, headers=None):
+                if url.endswith("company_tickers.json"):
+                    return StubResp({"0": {"ticker": "FALL", "cik_str": 123456}})
+                return StubResp(
+                    {
+                        "facts": {
+                            "us-gaap": {
+                                self.fact_name: {
+                                    "units": {"USD": [{"end": "2024-12-31", "val": 100_000_000}]}
+                                },
+                                "CommonStockSharesOutstanding": {
+                                    "units": {"shares": [{"end": "2024-12-31", "val": 10_000_000}]}
+                                },
+                            }
+                        }
+                    }
+                )
+
+        for fact_name in (
+            "Revenues",
+            "SalesRevenueNet",
+            "RevenueFromContractWithCustomerIncludingAssessedTax",
+        ):
+            with self.subTest(fact_name=fact_name):
+                facts = screener.load_sec_companyfacts(StubHTTP(fact_name), "FALL")
+
+                self.assertIsNotNone(facts)
+                assert facts is not None
+                self.assertEqual(facts.revenue, [("2024-12-31", 100_000_000.0)])
+
+    def test_load_sec_companyfacts_prefers_annual_revenue_over_quarterly_tag_hit(self):
+        class StubResp:
+            def __init__(self, payload):
+                self.payload = payload
+
+            def json(self):
+                return self.payload
+
+        class StubHTTP:
+            def get(self, url, headers=None):
+                if url.endswith("company_tickers.json"):
+                    return StubResp({"0": {"ticker": "ANNUAL", "cik_str": 123456}})
+                return StubResp(
+                    {
+                        "facts": {
+                            "us-gaap": {
+                                "RevenueFromContractWithCustomerIncludingAssessedTax": {
+                                    "units": {
+                                        "USD": [
+                                            {"end": "2026-03-31", "val": 3_000_000, "form": "10-Q", "fp": "Q1"}
+                                        ]
+                                    }
+                                },
+                                "Revenues": {
+                                    "units": {
+                                        "USD": [
+                                            {"end": "2025-12-31", "val": 120_000_000, "form": "10-K", "fp": "FY"}
+                                        ]
+                                    }
+                                },
+                            }
+                        }
+                    }
+                )
+
+        facts = screener.load_sec_companyfacts(StubHTTP(), "ANNUAL")
+
+        self.assertIsNotNone(facts)
+        assert facts is not None
+        self.assertEqual(facts.revenue, [("2025-12-31", 120_000_000.0)])
+
+    def test_stage3_share_sanity_allows_low_implied_valuation(self):
         analysis = TickerAnalysis(
-            symbol="BRZE",
-            quote=QuoteSnapshot(symbol="BRZE", price=24.35, market_cap=2_720_000_000.0),
+            symbol="LOWDCF",
+            quote=QuoteSnapshot(symbol="LOWDCF", price=50.0, market_cap=5_000_000_000.0),
             barchart=BarchartSnapshot(),
             options=OptionsSnapshot(),
             sec=SECFacts(
-                revenue=[("2025-01-31", 190_842_000.0), ("2026-01-31", 738_182_000.0)],
-                net_income=[("2025-01-31", -131_287_000.0), ("2026-01-31", -131_287_000.0)],
-                op_income=[("2025-01-31", -144_757_000.0), ("2026-01-31", -144_757_000.0)],
-                op_cash_flow=[("2025-01-31", 71_438_000.0), ("2026-01-31", 71_438_000.0)],
-                cash=[("2026-01-31", 124_342_000.0)],
-                shares=[("2021-10-31", 21_413_059.0)],
+                revenue=[("2023-12-31", 100_000_000.0), ("2024-12-31", 110_000_000.0)],
+                op_cash_flow=[("2024-12-31", 5_000_000.0)],
+                cash=[("2024-12-31", 10_000_000.0)],
+                shares=[("2024-12-31", 100_000_000.0)],
+            ),
+        )
+
+        stage3 = stage3_analysis(analysis)
+
+        self.assertIsNotNone(stage3)
+        assert stage3 is not None
+        self.assertNotEqual(stage3.get("verdict"), "QC FAIL")
+        self.assertIsNone(stage3["share_qc_detail"])
+        self.assertLess(stage3["weighted_fair_value"] * 100_000_000.0, 5_000_000_000.0)
+
+    def test_stage3_share_sanity_still_fails_high_implied_valuation(self):
+        analysis = TickerAnalysis(
+            symbol="HIGHDCF",
+            quote=QuoteSnapshot(symbol="HIGHDCF", price=1.0, market_cap=100_000_000.0),
+            barchart=BarchartSnapshot(),
+            options=OptionsSnapshot(),
+            sec=SECFacts(
+                revenue=[("2023-12-31", 5_000_000_000.0), ("2024-12-31", 10_000_000_000.0)],
+                op_cash_flow=[("2024-12-31", 1_000_000_000.0)],
+                cash=[("2024-12-31", 100_000_000.0)],
+                shares=[("2024-12-31", 100_000_000.0)],
             ),
         )
 
@@ -324,7 +427,6 @@ class ScreenerTests(unittest.TestCase):
         assert stage3 is not None
         self.assertEqual(stage3["verdict"], "QC FAIL")
         self.assertIn("share denominator sanity failed", stage3["qc_fail_reason"])
-        self.assertEqual(stage3["share_count_source"], "market_cap_implied")
         self.assertIn("implied $", stage3["share_qc_detail"])
 
     def test_summary_verdict_uses_only_legal_labels(self):

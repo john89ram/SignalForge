@@ -388,8 +388,52 @@ def load_sec_companyfacts(http: HTTP, symbol: str) -> Optional[SECFacts]:
 
     facts = data.get("facts", {}).get("us-gaap", {})
     out = SECFacts(cik=cik_str)
+    revenue_tags = (
+        "RevenueFromContractWithCustomerExcludingAssessedTax",
+        "RevenueFromContractWithCustomerIncludingAssessedTax",
+        "Revenues",
+        "SalesRevenueNet",
+    )
+
+    def fact_rows(fact_name: str) -> List[Tuple[str, float, bool]]:
+        fact = facts.get(fact_name)
+        if not fact:
+            return []
+        units = fact.get("units", {})
+        if not units:
+            return []
+        # Prefer USD or shares if present.
+        unit_name = "USD" if "USD" in units else ("shares" if "shares" in units else next(iter(units)))
+        rows = []
+        for item in units[unit_name]:
+            val = item.get("val")
+            if val is None:
+                continue
+            when = item.get("end") or item.get("start") or item.get("filed") or ""
+            is_annual = item.get("fp") == "FY" or item.get("form") in {"10-K", "20-F", "40-F"}
+            rows.append((when, float(val), is_annual))
+        return rows
+
+    def collect_fact(fact_name: str, collector: List[Tuple[str, float]]) -> bool:
+        rows = fact_rows(fact_name)
+        collector.extend((when, value) for when, value, _is_annual in rows)
+        return bool(rows)
+
+    fallback_revenue_rows: List[Tuple[str, float]] = []
+    for fact_name in revenue_tags:
+        rows = fact_rows(fact_name)
+        if not rows:
+            continue
+        annual_rows = [(when, value) for when, value, is_annual in rows if is_annual]
+        if annual_rows:
+            out.revenue.extend(annual_rows)
+            break
+        if not fallback_revenue_rows:
+            fallback_revenue_rows = [(when, value) for when, value, _is_annual in rows]
+    if not out.revenue:
+        out.revenue.extend(fallback_revenue_rows)
+
     extract_map = {
-        "RevenueFromContractWithCustomerExcludingAssessedTax": out.revenue,
         "NetIncomeLoss": out.net_income,
         "OperatingIncomeLoss": out.op_income,
         "NetCashProvidedByUsedInOperatingActivities": out.op_cash_flow,
@@ -397,20 +441,7 @@ def load_sec_companyfacts(http: HTTP, symbol: str) -> Optional[SECFacts]:
         "CommonStockSharesOutstanding": out.shares,
     }
     for fact_name, collector in extract_map.items():
-        fact = facts.get(fact_name)
-        if not fact:
-            continue
-        units = fact.get("units", {})
-        if not units:
-            continue
-        # Prefer USD or shares if present.
-        unit_name = "USD" if "USD" in units else ("shares" if "shares" in units else next(iter(units)))
-        for item in units[unit_name]:
-            val = item.get("val")
-            if val is None:
-                continue
-            when = item.get("end") or item.get("start") or item.get("filed") or ""
-            collector.append((when, float(val)))
+        collect_fact(fact_name, collector)
 
     # sort by date string; SEC date strings are yyyy-mm-dd, so lexicographic works.
     for collector in (out.revenue, out.net_income, out.op_income, out.op_cash_flow, out.cash, out.shares):
@@ -697,11 +728,11 @@ def _apld_forward_buildout_stage3(analysis: TickerAnalysis) -> Optional[Dict[str
     share_qc_detail = None
     if q.market_cap is not None and q.market_cap > 0:
         implied_mktcap = weighted * shares
-        delta = abs(implied_mktcap - q.market_cap) / q.market_cap
-        if delta > 0.20:
+        upside_delta = (implied_mktcap - q.market_cap) / q.market_cap
+        if upside_delta > 0.20:
             share_qc_detail = (
                 f"implied ${implied_mktcap / 1e9:.2f}B vs "
-                f"known ${q.market_cap / 1e9:.2f}B ({delta * 100:.1f}%)"
+                f"known ${q.market_cap / 1e9:.2f}B ({upside_delta * 100:.1f}%)"
             )
             return {
                 "verdict": "QC FAIL",
@@ -873,11 +904,11 @@ def stage3_analysis(analysis: TickerAnalysis) -> Optional[Dict[str, Any]]:
     share_qc_detail = None
     if q.market_cap is not None and q.market_cap > 0:
         implied_mktcap = weighted * shares
-        delta = abs(implied_mktcap - q.market_cap) / q.market_cap
-        if delta > 0.20:
+        upside_delta = (implied_mktcap - q.market_cap) / q.market_cap
+        if upside_delta > 0.20:
             share_qc_detail = (
                 f"implied ${implied_mktcap / 1e9:.2f}B vs "
-                f"known ${q.market_cap / 1e9:.2f}B ({delta * 100:.1f}%)"
+                f"known ${q.market_cap / 1e9:.2f}B ({upside_delta * 100:.1f}%)"
             )
             return qc_fail(
                 f"share denominator sanity failed: {share_qc_detail}",

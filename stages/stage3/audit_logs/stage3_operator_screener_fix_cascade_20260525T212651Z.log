@@ -1,0 +1,30 @@
+Processing Stage 3 tier Diamond: 6 symbols
+symbol_result symbol=CLSK stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=15.97 mos=0.4995163570903359 qc_fail_reason=
+symbol_result symbol=MARA stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=13.81 mos=0.6391233461400189 qc_fail_reason=
+symbol_result symbol=PCT stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=11.32 mos=0.23887904499699242 qc_fail_reason=
+symbol_result symbol=QUBT stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=12.31 mos=0.5707460299036871 qc_fail_reason=
+symbol_result symbol=USAR stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=25.3 mos=4.011666042290813 qc_fail_reason=
+symbol_result symbol=UUUU stage2_tier=Diamond stage3_verdict=NO ENTRY category=A price=18.04 mos=1.2074491078816059 qc_fail_reason=
+cascade_decision tier_completed=Diamond symbols_in_tier=6 cumulative_symbols=6 actionable=0 decision=continue reason=actionable count 0 below threshold 5
+Processing Stage 3 tier Strong: 15 symbols
+symbol_result symbol=APLD stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=45.87 mos=9.30181415318088 qc_fail_reason=
+symbol_result symbol=ASST stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=18.21 mos=0.6821642811500475 qc_fail_reason=
+symbol_result symbol=BTDR stage2_tier=Strong stage3_verdict=QC FAIL category= price=14.65 mos= qc_fail_reason=SEC data unavailable or no live price
+symbol_result symbol=FSLY stage2_tier=Strong stage3_verdict=NO ENTRY category=A price=16.32 mos=13.283519563325079 qc_fail_reason=
+symbol_result symbol=GLXY stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=28.65 mos=-34.107631279808594 qc_fail_reason=
+symbol_result symbol=IREN stage2_tier=Strong stage3_verdict=NO ENTRY category=A price=56.83 mos=15.583506805365545 qc_fail_reason=
+symbol_result symbol=RGTI stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=26.42 mos=0.06757246768105074 qc_fail_reason=
+symbol_result symbol=RIOT stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=24.49 mos=-0.11866335325316213 qc_fail_reason=
+symbol_result symbol=RLAY stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=13.53 mos=0.5221149579446397 qc_fail_reason=
+symbol_result symbol=RUN stage2_tier=Strong stage3_verdict=QC FAIL category=A price=14.62 mos= qc_fail_reason=share denominator sanity failed: implied $14.72B vs known $3.49B (321.6%)
+symbol_result symbol=WULF stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=22.82 mos=3.086531060690189 qc_fail_reason=
+symbol_result symbol=PATH stage2_tier=Strong stage3_verdict=QC FAIL category=A price=10.93 mos= qc_fail_reason=share denominator sanity failed: implied $7.29B vs known $5.69B (28.1%)
+symbol_result symbol=QBTS stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=29.4 mos=0.4418068057577949 qc_fail_reason=
+symbol_result symbol=SOC stage2_tier=Strong stage3_verdict=QC FAIL category= price=14.74 mos= qc_fail_reason=zero or missing revenue
+symbol_result symbol=UEC stage2_tier=Strong stage3_verdict=QC FAIL category= price=13.02 mos= qc_fail_reason=zero or missing revenue
+cascade_decision tier_completed=Strong symbols_in_tier=15 cumulative_symbols=21 actionable=0 decision=continue reason=actionable count 0 below threshold 5
+Stage 3 report complete
+- Output CSV: /home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv
+- Log: /home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260525T212651Z.log
+- Audit JSONL: /home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260525T212651Z.jsonl
+- Verdict counts: {'NO ENTRY': 16, 'QC FAIL': 5}
