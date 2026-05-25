@@ -32,3 +32,29 @@ python -m stages.stage1.code.step1_rough_filter \
 ```
 
 The output CSV is a generated artifact and should feed the next Stage 1 step.
+
+## Stage 1 / Step 2 — exchange split for enrichment batching
+
+**Goal:** split the 757 Step 1 rough survivors into exchange-specific enrichment batches.
+
+Canonical outputs:
+
+- `stages/stage1/output/exchange_splits/NYSE.csv`
+- `stages/stage1/output/exchange_splits/NASDAQ.csv`
+
+Run Step 2:
+
+```bash
+python -m stages.stage1.code.step2_exchange_split \
+  --input-csv stages/stage1/output/stage1_step1_rough_filter.csv \
+  --output-dir stages/stage1/output/exchange_splits \
+  --audit-log stages/stage1/audit_logs/stage1_step2_exchange_split.jsonl
+```
+
+Current checked split:
+
+- NYSE: `477`
+- NASDAQ: `280`
+- Unknown: `0`
+
+This split is for enrichment throughput and debugging only. It does not change trade eligibility.

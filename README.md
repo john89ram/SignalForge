@@ -45,6 +45,22 @@ Filters:
 
 The current local archive produces `757` rough survivors, in line with the expected `~750` result.
 
+## Stage 1 Step 2
+
+Split the rough survivors into exchange batches for enrichment:
+
+```bash
+python -m stages.stage1.code.step2_exchange_split \
+  --input-csv stages/stage1/output/stage1_step1_rough_filter.csv \
+  --output-dir stages/stage1/output/exchange_splits \
+  --audit-log stages/stage1/audit_logs/stage1_step2_exchange_split.jsonl
+```
+
+Current checked split:
+
+- NYSE: `477`
+- NASDAQ: `280`
+
 ## Run it
 
 ```bash
