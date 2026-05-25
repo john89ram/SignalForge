@@ -34,6 +34,15 @@ class Stage1Step3BarchartEnrichmentTests(unittest.TestCase):
         }
         self.assertEqual(missing_fields(row, DEFAULT_REQUIRED_FIELDS), ["barchart_iv_percentile"])
 
+    def test_missing_fields_treats_zero_iv_rank_as_present(self):
+        row = {
+            "barchart_implied_volatility": "80",
+            "barchart_historical_volatility": "70",
+            "barchart_iv_percentile": "0",
+            "barchart_iv_rank": "0",
+        }
+        self.assertEqual(missing_fields(row, DEFAULT_REQUIRED_FIELDS), [])
+
     def test_enrich_rows_with_repair_retries_missing_rows_only_twice(self):
         calls = {"AAA": 0, "BBB": 0}
 

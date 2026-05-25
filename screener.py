@@ -610,25 +610,6 @@ NEWS_FLAG_KEYWORDS = ["earnings", "guidance", "acquire", "merger", "fda", "appro
 MOMO_KEYWORDS = ["reddit", "meme", "squeeze", "robinhood", "retail"]
 
 
-def _stage2_add_test(
-    tests: List[Dict[str, Any]],
-    *,
-    name: str,
-    status: str,
-    detail: str,
-    score: Optional[float],
-) -> None:
-    tests.append(
-        {
-            "name": name,
-            "status": status,
-            "detail": detail,
-            "score": score,
-            "hp_loss": 1 if status == "KILL" else 0,
-        }
-    )
-
-
 def analyze_stage2(analysis: TickerAnalysis, price_history: Optional[List[float]] = None) -> None:
     """Run the canonical Stage 2 seven-test HP sieve.
 

@@ -94,12 +94,7 @@ def _value_missing(value: object) -> bool:
         return True
     cleaned = text.replace(",", "").replace("$", "").replace("%", "")
     match = re.search(r"-?\d+(?:\.\d+)?", cleaned)
-    if not match:
-        return True
-    try:
-        return float(match.group(0)) <= 0
-    except ValueError:
-        return True
+    return match is None
 
 
 def missing_fields(row: Mapping[str, object], required_fields: Sequence[str]) -> list[str]:

@@ -142,6 +142,15 @@ class MemeStockTest:
         return result(self.name, PASS, "0-1 meme signals")
 
 
+def _pct_deviation_to_reference_price(price: float, pct_deviation: Optional[float]) -> Optional[float]:
+    if pct_deviation is None:
+        return None
+    denominator = 1 + (pct_deviation / 100)
+    if denominator <= 0:
+        return None
+    return price / denominator
+
+
 class ChartPatternTest:
     name = "chart pattern"
 
@@ -155,10 +164,13 @@ class ChartPatternTest:
             move = _pct_change(history[-1], history[-20])
             if move is not None and move >= 0.50:
                 return result(self.name, BAD, "50%+ rally in the past month")
-        if price is not None and q.sma200 and price < q.sma200:
-            return result(self.name, BAD, "Broke 200-day moving average")
-        if price is not None and q.sma50 and price < q.sma50:
-            return result(self.name, WEAK, "Broke 50-day moving average but not 200-day")
+        if price is not None:
+            sma200_price = _pct_deviation_to_reference_price(price, q.sma200)
+            sma50_price = _pct_deviation_to_reference_price(price, q.sma50)
+            if sma200_price is not None and price < sma200_price:
+                return result(self.name, BAD, "Broke 200-day moving average")
+            if sma50_price is not None and price < sma50_price:
+                return result(self.name, WEAK, "Broke 50-day moving average but not 200-day")
         if len(history) >= 2:
             day_move = abs(_pct_change(history[-1], history[-2]) or 0.0)
             if day_move >= 0.15:
@@ -227,10 +239,10 @@ class InstitutionalOwnershipTest:
             return result(self.name, SKIP, "Institutional ownership unavailable")
         if q.inst_own < 30:
             return result(self.name, BAD, f"Institutional ownership below 30% ({q.inst_own:.1f}%)")
-        if q.inst_own <= 50:
-            return result(self.name, WEAK, f"Institutional ownership 30-50% ({q.inst_own:.1f}%)")
         if q.insider_trans is not None and q.insider_trans <= -20:
             return result(self.name, BAD, f"Insider selling spike ({q.insider_trans:.1f}%)")
+        if q.inst_own <= 50:
+            return result(self.name, WEAK, f"Institutional ownership 30-50% ({q.inst_own:.1f}%)")
         return result(self.name, PASS, f"Institutional ownership above 50% ({q.inst_own:.1f}%)")
 
 

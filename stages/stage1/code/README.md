@@ -115,7 +115,9 @@ python -m stages.stage1.code.step4_options_liquidity_enrichment \
 
 ## Step 5 completed output
 
-Module: `stages.stage1.code.step4_complete_stage1_output`
+Module: `stages.stage1.code.step5_complete_stage1_output`
+
+Compatibility wrapper: `stages.stage1.code.step4_complete_stage1_output` remains available for older callers, but new docs and commands should use the Step 5 module name.
 
 Purpose:
 
@@ -132,7 +134,7 @@ Purpose:
 Run:
 
 ```bash
-python -m stages.stage1.code.step4_complete_stage1_output \
+python -m stages.stage1.code.step5_complete_stage1_output \
   --input-dir stages/stage1/output \
   --output-dir stages/stage1/output \
   --stage2-input-dir stages/stage2/input \

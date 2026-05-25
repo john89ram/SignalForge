@@ -151,7 +151,7 @@ Canonical outputs:
 Run Step 5:
 
 ```bash
-python -m stages.stage1.code.step4_complete_stage1_output \
+python -m stages.stage1.code.step5_complete_stage1_output \
   --input-dir stages/stage1/output \
   --output-dir stages/stage1/output \
   --stage2-input-dir stages/stage2/input \

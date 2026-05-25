@@ -95,6 +95,8 @@ The human log records per-symbol progress with row count, percent complete, symb
 
 Run ID: `20260525T161635Z`
 
+This run validates the Stage 2 runner mechanics, output-column contract, per-symbol progress logging, and JSONL audit coverage only. It is **not** a production/live sieve result because `--offline-input-only` does not fetch news, price history, SMA/range fields, or institutional ownership. In offline mode only analyst target/price and liquidity fields are materially evaluated from the Stage 1 handoff; missing live-data checks may auto-PASS or SKIP by design. Use the counts below as contract evidence, not as evidence that all seven tests cleared each ticker.
+
 Command:
 
 ```bash

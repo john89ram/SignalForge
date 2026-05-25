@@ -87,6 +87,26 @@ def test_liquidity_uses_stage2_thresholds_from_chat_contract():
     assert LiquidityTest().run(analysis(quote=q, options=OptionsSnapshot(atm_bid_ask_spread=0.30, total_volume=1_001, total_open_interest=1_500))).status == "BAD"
 
 
+def test_chart_pattern_converts_finviz_sma_deviation_to_absolute_price():
+    test = ChartPatternTest()
+    below_200 = analysis(quote=QuoteSnapshot(symbol="TST", price=20.0, sma200=-10.0, sma50=5.0))
+    below_50_only = analysis(quote=QuoteSnapshot(symbol="TST", price=20.0, sma200=5.0, sma50=-10.0))
+
+    assert test.run(below_200).status == "BAD"
+    assert test.run(below_200).detail == "Broke 200-day moving average"
+    assert test.run(below_50_only).status == "WEAK"
+    assert test.run(below_50_only).detail == "Broke 50-day moving average but not 200-day"
+
+
+def test_institutional_ownership_flags_insider_selling_before_borderline_ownership():
+    q = QuoteSnapshot(symbol="TST", price=20.0, inst_own=40.0, insider_trans=-50.0)
+
+    result = InstitutionalOwnershipTest().run(analysis(quote=q))
+
+    assert result.status == "BAD"
+    assert result.detail == "Insider selling spike (-50.0%)"
+
+
 def test_report_runner_import_path_exists_under_stage2_code():
     from stages.stage2.code.run_stage2 import DEFAULT_INPUT, DEFAULT_OUTPUT, DEFAULT_LOG_DIR
 

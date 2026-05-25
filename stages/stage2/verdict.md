@@ -28,3 +28,7 @@ CSV verdict fields:
 - per-test `*_status`, `*_hp_loss`, and `*_detail` columns
 
 Stage 1 pass state is preserved. Stage 2 writes its own verdict instead of changing Stage 1 truth.
+
+## Validation status
+
+The committed offline run (`20260525T161635Z`) validates the CSV/report contract, runner mechanics, progress log, and JSONL audit shape. It should not be read as proof that all 71 names passed a fully live sieve: `--offline-input-only` intentionally avoids live news, price history, SMA/range fields, and institutional ownership fetches, so several tests can only auto-PASS or SKIP. The first production/live Stage 2 run still needs to verify all seven tests against fetched live data before Stage 2 is cleared for production decisions.

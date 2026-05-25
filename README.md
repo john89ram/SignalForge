@@ -25,9 +25,10 @@ See [`docs/project-layout.md`](docs/project-layout.md) for the canonical layout.
 - **Stage 1 Step 1**: `stages/stage1/code/step1_rough_filter.py`
 - **Stage 1 Step 2**: `stages/stage1/code/step2_exchange_split.py`
 - **Stage 1 Step 3**: `stages/stage1/code/step3_barchart_enrichment.py`
-- **Stage 1 Step 4**: `stages/stage1/code/step4_complete_stage1_output.py`
+- **Stage 1 Step 4**: `stages/stage1/code/step4_options_liquidity_enrichment.py`
+- **Stage 1 Step 5**: `stages/stage1/code/step5_complete_stage1_output.py`
 - **Legacy / support code**: `screener.py`, `market_cap_census.py`, `nasdaq_market_cap_census.py`, `nasdaq_summary_archive.py`
-- **Stage 2 code**: `stage2_report.py`, `exchange_enrichment_workflow.py`
+- **Stage 2 code**: `stages/stage2/code/run_stage2.py`, `stages/stage2/code/stage2_sieve.py`, `stage2_report.py`
 - **Stage 3 / orchestration**: `full_market_pipeline.py`
 
 ## Stage 1 Step 1
@@ -79,24 +80,39 @@ python -m stages.stage1.code.step3_barchart_enrichment \
 
 ## Stage 1 Step 4
 
-Merge the enriched exchange CSVs back into one Stage 1 universe, filter to the final Stage 1 implied-volatility floor, write audit artifacts, and copy the completed pass CSV into the Stage 2 input folder:
+Enrich the Stage 3 Barchart survivors with explicit options-liquidity fields before final pass/fail classification:
 
 ```bash
-python -m stages.stage1.code.step4_complete_stage1_output \
+python -m stages.stage1.code.step4_options_liquidity_enrichment \
   --input-dir stages/stage1/output/barchart_enrichment \
+  --output-csv stages/stage1/output/stage1_step4_options_liquidity_enriched.csv \
+  --audit-log stages/stage1/audit_logs/stage1_step4_options_liquidity_enrichment.jsonl \
+  --delay-seconds 0.25
+```
+
+## Stage 1 Step 5
+
+Merge the options-liquidity-enriched CSV, filter to the final Stage 1 implied-volatility/options-liquidity/market-cap floors, write audit artifacts, and copy the completed pass CSV into the Stage 2 input folder:
+
+```bash
+python -m stages.stage1.code.step5_complete_stage1_output \
+  --input-dir stages/stage1/output \
   --output-dir stages/stage1/output \
   --stage2-input-dir stages/stage2/input \
-  --audit-log stages/stage1/audit_logs/stage1_step4_complete_output.jsonl \
-  --min-implied-volatility 75
+  --audit-log stages/stage1/audit_logs/stage1_step5_complete_output.jsonl \
+  --min-implied-volatility 75 \
+  --min-options-volume 1000 \
+  --min-open-interest 1000 \
+  --min-market-cap 1000000000
 ```
 
 Canonical outputs:
 
-- `stages/stage1/output/stage1_step4_merged_barchart_enriched.csv`
+- `stages/stage1/output/stage1_step5_merged_options_liquidity_enriched.csv`
 - `stages/stage1/output/Stage1_PASS.csv`
 - `stages/stage1/output/Stage1_FAIL.csv`
 - `stages/stage2/input/Stage1_PASS.csv`
-- `stages/stage1/audit_logs/stage1_step4_complete_output.jsonl`
+- `stages/stage1/audit_logs/stage1_step5_complete_output.jsonl`
 
 ## Run it
 

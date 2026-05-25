@@ -46,9 +46,15 @@ market-funnel/
 
 ## Current code mapping
 
-- **Stage 1**: `screener.py`, `market_cap_census.py`, `nasdaq_market_cap_census.py`
-- **Stage 2**: `stage2_report.py`, `exchange_enrichment_workflow.py`
+- **Stage 1**: canonical staged pipeline under `stages/stage1/code/`:
+  - `step1_rough_filter.py`
+  - `step2_exchange_split.py`
+  - `step3_barchart_enrichment.py`
+  - `step4_options_liquidity_enrichment.py`
+  - `step5_complete_stage1_output.py`
+- **Stage 2**: `stages/stage2/code/stage2_sieve.py` and `stages/stage2/code/run_stage2.py`; `stage2_report.py` is a compatibility wrapper.
 - **Stage 3**: `screener.py` report generation and downstream valuation logic
+- **Legacy / support utilities**: `screener.py`, `market_cap_census.py`, `nasdaq_market_cap_census.py`, `nasdaq_summary_archive.py`, `exchange_enrichment_workflow.py`
 - **Pipeline orchestration**: `full_market_pipeline.py`
 
 ## Review workflow

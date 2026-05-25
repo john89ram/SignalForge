@@ -4,10 +4,10 @@ import os
 import tempfile
 import unittest
 
-from stages.stage1.code.step4_complete_stage1_output import run_stage1_step4_complete_output
+from stages.stage1.code.step5_complete_stage1_output import run_stage1_step5_complete_output
 
 
-class Stage1Step4CompleteOutputTests(unittest.TestCase):
+class Stage1Step5CompleteOutputTests(unittest.TestCase):
     def _write_enriched_csv(self, path, rows):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         fieldnames = [
@@ -32,7 +32,7 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
             input_dir = os.path.join(tmpdir, "barchart_enrichment")
             output_dir = os.path.join(tmpdir, "stage1_output")
             stage2_input_dir = os.path.join(tmpdir, "stage2", "input")
-            audit_log = os.path.join(tmpdir, "audit", "stage1_step4_complete_output.jsonl")
+            audit_log = os.path.join(tmpdir, "audit", "stage1_step5_complete_output.jsonl")
 
             self._write_enriched_csv(
                 os.path.join(input_dir, "NASDAQ_barchart_enriched.csv"),
@@ -93,7 +93,7 @@ class Stage1Step4CompleteOutputTests(unittest.TestCase):
                 ],
             )
 
-            result = run_stage1_step4_complete_output(
+            result = run_stage1_step5_complete_output(
                 input_dir=input_dir,
                 output_dir=output_dir,
                 stage2_input_dir=stage2_input_dir,
