@@ -18,3 +18,9 @@ exchange_enrichment_runs/
 exchange_splits/
 master_lists/
 nasdaq_summary_archive/
+stages/*/output/*.csv
+stages/*/output/*.json
+stages/*/output/*.jsonl
+stages/*/output/*.log
+stages/*/audit_logs/*.jsonl
+stages/*/audit_logs/*.log

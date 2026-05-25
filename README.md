@@ -22,9 +22,28 @@ See [`docs/project-layout.md`](docs/project-layout.md) for the canonical layout.
 
 ## Current implementation map
 
-- **Stage 1 code**: `screener.py`, `market_cap_census.py`, `nasdaq_market_cap_census.py`
+- **Stage 1 Step 1**: `stages/stage1/code/step1_rough_filter.py`
+- **Legacy / support code**: `screener.py`, `market_cap_census.py`, `nasdaq_market_cap_census.py`, `nasdaq_summary_archive.py`
 - **Stage 2 code**: `stage2_report.py`, `exchange_enrichment_workflow.py`
 - **Stage 3 / orchestration**: `full_market_pipeline.py`
+
+## Stage 1 Step 1
+
+Run the first rough U.S. market filter from the latest Nasdaq summary archive:
+
+```bash
+python -m stages.stage1.code.step1_rough_filter \
+  --input-csv master_lists/nasdaq_summary_latest.csv \
+  --output-csv stages/stage1/output/stage1_step1_rough_filter.csv
+```
+
+Filters:
+
+- Market cap `>= $1B`
+- Price proxy between `$10` and `$75`
+- Share volume `>= 1,000,000`
+
+The current local archive produces `757` rough survivors, in line with the expected `~750` result.
 
 ## Run it
 
