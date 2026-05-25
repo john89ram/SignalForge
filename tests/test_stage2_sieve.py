@@ -1,3 +1,8 @@
+import csv
+import json
+import subprocess
+import sys
+
 from screener import BarchartSnapshot, OptionsSnapshot, QuoteSnapshot, TickerAnalysis
 from stages.stage2.code.stage2_sieve import (
     AnalystConsensusTest,
@@ -88,3 +93,76 @@ def test_report_runner_import_path_exists_under_stage2_code():
     assert str(DEFAULT_INPUT).endswith("stages/stage2/input/Stage1_PASS.csv")
     assert str(DEFAULT_OUTPUT).endswith("stages/stage2/output/Stage2_Report.csv")
     assert str(DEFAULT_LOG_DIR).endswith("stages/stage2/audit_logs")
+
+
+def test_stage2_direct_script_writes_progress_log_and_jsonl_audit(tmp_path):
+    input_csv = tmp_path / "Stage1_PASS.csv"
+    output_csv = tmp_path / "Stage2_Report.csv"
+    log_dir = tmp_path / "audit_logs"
+    with input_csv.open("w", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(
+            fh,
+            fieldnames=[
+                "symbol",
+                "name",
+                "previous_close",
+                "share_volume",
+                "market_cap",
+                "one_yr_target",
+                "barchart_implied_volatility",
+                "options_volume",
+                "open_interest",
+                "atm_bid_ask_spread",
+                "stage1_step4_verdict",
+            ],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "symbol": "TST",
+                "name": "Test Co",
+                "previous_close": "20",
+                "share_volume": "2000000",
+                "market_cap": "2000000000",
+                "one_yr_target": "30",
+                "barchart_implied_volatility": "90",
+                "options_volume": "20000",
+                "open_interest": "30000",
+                "atm_bid_ask_spread": "0.05",
+                "stage1_step4_verdict": "PASS",
+            }
+        )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "stages/stage2/code/run_stage2.py",
+            str(input_csv),
+            "--output-csv",
+            str(output_csv),
+            "--log-dir",
+            str(log_dir),
+            "--offline-input-only",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "[  1/1 100.0%] TST" in result.stdout
+    assert "eligible_for_stage3=TRUE" in result.stdout
+    with output_csv.open(newline="", encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    assert rows[0]["symbol"] == "TST"
+    assert rows[0]["stage2_hp_left"] == "10"
+
+    log_files = list(log_dir.glob("stage2_run_*.log"))
+    audit_files = list(log_dir.glob("stage2_run_*.jsonl"))
+    assert len(log_files) == 1
+    assert len(audit_files) == 1
+    log_text = log_files[0].read_text(encoding="utf-8")
+    assert "offline_input_only=True" in log_text
+    assert "summary=" in log_text
+    audit_events = [json.loads(line) for line in audit_files[0].read_text(encoding="utf-8").splitlines()]
+    assert [event["event"] for event in audit_events] == ["stage2_symbol_complete", "stage2_run_complete"]
+    assert audit_events[0]["pct_complete"] == 100.0

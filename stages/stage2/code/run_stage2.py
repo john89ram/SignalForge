@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import sys
 import time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -17,9 +18,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from screener import BarchartSnapshot, HTTP, OptionsSnapshot, QuoteSnapshot, TickerAnalysis, analyze_stage2, analyze_ticker
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from screener import BarchartSnapshot, HTTP, OptionsSnapshot, QuoteSnapshot, TickerAnalysis, analyze_stage2, analyze_ticker
 DEFAULT_INPUT = REPO_ROOT / "stages" / "stage2" / "input" / "Stage1_PASS.csv"
 DEFAULT_OUTPUT = REPO_ROOT / "stages" / "stage2" / "output" / "Stage2_Report.csv"
 DEFAULT_LOG_DIR = REPO_ROOT / "stages" / "stage2" / "audit_logs"
@@ -252,24 +255,64 @@ def run(
     rows = _load_stage1_rows(input_path)
     total = len(rows)
     results: Dict[int, TickerAnalysis] = {}
-    log_lines = [f"Stage 2 run started {timestamp}", f"input={input_path}", f"output={output_path}", f"rows={total}"]
+    audit_events: List[Dict[str, Any]] = []
+    log_lines = [
+        f"Stage 2 run started {timestamp}",
+        f"input={input_path}",
+        f"output={output_path}",
+        f"log={log_path}",
+        f"audit_jsonl={audit_path}",
+        f"rows={total}",
+        f"workers={max(1, workers)}",
+        f"include_stage3={include_stage3}",
+        f"offline_input_only={offline_input_only}",
+    ]
 
     with ThreadPoolExecutor(max_workers=max(1, workers)) as executor:
         future_map = {executor.submit(_analyze_row, row, include_stage3, offline_input_only): idx for idx, row in enumerate(rows)}
         completed = 0
         for future in as_completed(future_map):
             idx = future_map[future]
+            error_text = ""
             try:
                 analysis = future.result()
             except Exception as exc:  # noqa: BLE001
+                error_text = str(exc)
                 analysis = _failed_analysis(rows[idx], exc)
             results[idx] = analysis
             completed += 1
+            pct_complete = round((completed / total) * 100, 1) if total else 100.0
+            row_event = {
+                "event": "stage2_symbol_complete",
+                "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                "completed": completed,
+                "total": total,
+                "pct_complete": pct_complete,
+                "input_row_index": idx,
+                "symbol": analysis.symbol,
+                "tier": analysis.stage2_tier or "UNKNOWN",
+                "verdict": analysis.stage2_verdict or "UNKNOWN",
+                "eligible_for_stage3": bool(analysis.eligible_for_stage3),
+                "hp_total": analysis.stage2_hp_total,
+                "hp_left": analysis.stage2_hp_left,
+                "damage": analysis.stage2_hp_total - analysis.stage2_hp_left,
+                "bad_count": len(analysis.stage2_kills),
+                "weak_count": len(analysis.stage2_flags),
+                "bad_text": analysis.stage2_kills,
+                "weak_text": analysis.stage2_flags,
+                "error": error_text,
+            }
+            audit_events.append(row_event)
             line = (
-                f"[{completed:>3}/{total}] {analysis.symbol} tier={analysis.stage2_tier or 'UNKNOWN'} "
-                f"verdict={analysis.stage2_verdict or 'UNKNOWN'} hp_left={analysis.stage2_hp_left} "
-                f"damage={analysis.stage2_hp_total - analysis.stage2_hp_left}"
+                f"[{completed:>3}/{total} {pct_complete:>5.1f}%] {analysis.symbol} "
+                f"tier={analysis.stage2_tier or 'UNKNOWN'} verdict={analysis.stage2_verdict or 'UNKNOWN'} "
+                f"eligible_for_stage3={str(bool(analysis.eligible_for_stage3)).upper()} "
+                f"hp_left={analysis.stage2_hp_left}/{analysis.stage2_hp_total} "
+                f"damage={analysis.stage2_hp_total - analysis.stage2_hp_left} "
+                f"weak={len(analysis.stage2_flags)} bad={len(analysis.stage2_kills)}"
             )
+            if error_text:
+                line += f" error={error_text}"
             log_lines.append(line)
             if show_progress:
                 print(line, flush=True)
@@ -298,6 +341,8 @@ def run(
     log_lines.append("summary=" + json.dumps(summary, sort_keys=True))
     log_path.write_text("\n".join(log_lines) + "\n", encoding="utf-8")
     with audit_path.open("a", encoding="utf-8") as fh:
+        for event in audit_events:
+            fh.write(json.dumps(event, sort_keys=True) + "\n")
         fh.write(json.dumps(summary, sort_keys=True) + "\n")
 
     if show_progress:
