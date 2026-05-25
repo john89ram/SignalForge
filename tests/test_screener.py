@@ -218,7 +218,7 @@ class ScreenerTests(unittest.TestCase):
             screener.analyze_stage1_ticker = old_stage1
             screener.analyze_ticker = old_stage2
 
-    def test_stage2_does_not_kill_when_sec_facts_are_unavailable(self):
+    def test_stage2_removed_binary_operating_floor_test_and_preserves_stage1(self):
         analysis = TickerAnalysis(
             symbol="TEST",
             quote=QuoteSnapshot(symbol="TEST", price=25.0, inst_own=40.0),
@@ -226,12 +226,15 @@ class ScreenerTests(unittest.TestCase):
             options=OptionsSnapshot(),
             sec=None,
         )
+        analysis.stage1_pass = True
 
         analyze_stage2(analysis, price_history=[20.0, 21.0, 22.0, 23.0])
 
         self.assertNotIn("No real operating floor visible", analysis.stage2_kills)
-        self.assertIn("SEC facts unavailable; skipping operating-floor check", analysis.stage2_flags)
+        self.assertNotIn("event / operating floor", [test["name"] for test in analysis.stage2_tests])
         self.assertEqual(analysis.stage2_kills, [])
+        self.assertEqual(len(analysis.stage2_tests), 7)
+        self.assertTrue(analysis.stage1_pass)
 
     def test_analyze_ticker_skips_stage2_and_stage3_when_stage1_fails(self):
         calls = {"sec": 0, "history": 0, "stage2": 0, "stage3": 0}
@@ -357,12 +360,15 @@ class ScreenerTests(unittest.TestCase):
             stage1_reasons=["example reason"],
         )
         analysis.stage2_tests = [
-            {"name": "headline catalyst", "status": "FLAG", "detail": "IV is elevated", "score": 0.5, "hp_loss": 0},
-            {"name": "meme-stock signature", "status": "PASS", "detail": "No meme-stock tells detected", "score": 1.0, "hp_loss": 0},
+            {"name": "iv spike diagnosis", "status": "WEAK", "detail": "mixed catalyst", "score": 0.5, "hp_loss": 1},
+            {"name": "meme stock", "status": "PASS", "detail": "0-1 meme signals", "score": 1.0, "hp_loss": 0},
         ]
-        analysis.stage2_hp_total = 8
-        analysis.stage2_hp_left = 8
+        analysis.stage2_hp_total = 10
+        analysis.stage2_hp_left = 9
         analysis.stage2_score = 1.5
+        analysis.stage2_verdict = "PASS"
+        analysis.stage2_tier = "Diamond"
+        analysis.eligible_for_stage3 = True
         row = stage2_report._report_row(
             {
                 "symbol": "TEST",
@@ -380,11 +386,13 @@ class ScreenerTests(unittest.TestCase):
             analysis,
         )
         self.assertEqual(stage2_report._default_output_path("/tmp/run/Stage1_PASS.csv").endswith("Stage2_Report.csv"), True)
-        self.assertEqual(row["stage2_hp_left"], 8)
-        self.assertEqual(row["headline_catalyst_status"], "FLAG")
-        self.assertEqual(row["headline_catalyst_score"], 0.5)
-        self.assertEqual(row["meme_stock_signature_status"], "PASS")
-        self.assertEqual(row["meme_stock_signature_score"], 1.0)
+        self.assertEqual(row["stage2_hp_left"], 9)
+        self.assertEqual(row["hp_tier"], "Diamond")
+        self.assertEqual(row["eligible_for_stage3"], "TRUE")
+        self.assertEqual(row["iv_spike_diagnosis_status"], "WEAK")
+        self.assertEqual(row["iv_spike_diagnosis_hp_loss"], 1)
+        self.assertEqual(row["meme_stock_status"], "PASS")
+        self.assertEqual(row["meme_stock_hp_loss"], 0)
 
 
 if __name__ == "__main__":

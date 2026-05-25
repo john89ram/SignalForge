@@ -150,9 +150,12 @@ class TickerAnalysis:
     stage2_kills: List[str] = dataclasses.field(default_factory=list)
     stage2_flags: List[str] = dataclasses.field(default_factory=list)
     stage2_tests: List[Dict[str, Any]] = dataclasses.field(default_factory=list)
-    stage2_hp_total: int = 8
-    stage2_hp_left: int = 8
+    stage2_hp_total: int = 10
+    stage2_hp_left: int = 10
     stage2_score: float = 0.0
+    stage2_verdict: str = ""
+    stage2_tier: str = ""
+    eligible_for_stage3: bool = False
     stage3: Optional[Dict[str, Any]] = None
 
 
@@ -627,141 +630,15 @@ def _stage2_add_test(
 
 
 def analyze_stage2(analysis: TickerAnalysis, price_history: Optional[List[float]] = None) -> None:
-    q = analysis.quote
-    b = analysis.barchart
-    o = analysis.options
-    sec = analysis.sec
+    """Run the canonical Stage 2 seven-test HP sieve.
 
-    tests: List[Dict[str, Any]] = []
+    The implementation lives in `stages/stage2/code/stage2_sieve.py`; this
+    wrapper is kept for backward compatibility with older screener callers.
+    """
 
-    def add_test(name: str, status: str, detail: str, score: Optional[float]) -> None:
-        _stage2_add_test(tests, name=name, status=status, detail=detail, score=score)
-        if status == "KILL":
-            analysis.stage2_kills.append(detail)
-        elif status == "FLAG":
-            analysis.stage2_flags.append(detail)
+    from stages.stage2.code.stage2_sieve import Stage2Sieve
 
-    # Test 1: IV spike diagnosis.
-    headlines = " | ".join(n["headline"].lower() for n in q.news[:7])
-    catalyst_hits = [kw for kw in NEWS_FLAG_KEYWORDS if kw in headlines]
-    kill_hits = [kw for kw in NEWS_KILL_KEYWORDS if kw in headlines]
-    if kill_hits:
-        add_test("headline catalyst", "KILL", "News suggests existential damage: " + ", ".join(kill_hits), 0.0)
-    elif not catalyst_hits:
-        add_test("headline catalyst", "FLAG", "IV is elevated, but catalyst is not obvious from headlines", 0.5)
-    else:
-        add_test("headline catalyst", "FLAG", f"Real catalyst visible in headlines: {', '.join(catalyst_hits[:3])}", 0.5)
-
-    # Test 2: Meme stock test.
-    meme_kills = 0
-    if sec and latest_annual_fact(sec.revenue) is not None and latest_annual_fact(sec.revenue) <= 0:
-        meme_kills += 1
-    if any(k in headlines for k in MOMO_KEYWORDS):
-        meme_kills += 1
-    if q.inst_own is not None and q.inst_own < 20 and (q.eps_next_y is None or q.eps_next_y <= 0):
-        meme_kills += 1
-    if price_history:
-        if len(price_history) >= 20:
-            rally = price_history[-1] / price_history[-20] - 1
-            if rally >= 1.0 and not catalyst_hits:
-                meme_kills += 1
-    if meme_kills >= 3:
-        add_test("meme-stock signature", "KILL", "Meme-stock signature: 3+ tells", 0.0)
-    elif meme_kills == 2:
-        add_test("meme-stock signature", "FLAG", "Meme-stock behavior is present; size down", 0.5)
-    else:
-        add_test("meme-stock signature", "PASS", "No meme-stock tells detected", 1.0)
-
-    # Test 3: Binary event assessment.
-    event_details: List[str] = []
-    if q.earnings_date:
-        event_details.append(f"Earnings/date watch: {q.earnings_date}")
-    if sec is None:
-        event_details.append("SEC facts unavailable; skipping operating-floor check")
-        add_test("event / operating floor", "FLAG", " | ".join(event_details), 0.5)
-    elif latest_annual_fact(sec.revenue) is not None and latest_annual_fact(sec.revenue) > 0:
-        if q.price is not None and q.price > 0 and q.inst_own is not None:
-            event_details.append("Business has real revenue under it")
-            add_test("event / operating floor", "FLAG", " | ".join(event_details), 0.5)
-        else:
-            add_test("event / operating floor", "PASS", "Operating floor check cleared", 1.0)
-    else:
-        add_test("event / operating floor", "KILL", "No real operating floor visible", 0.0)
-
-    # Test 4: Chart pattern check.
-    if price_history and len(price_history) >= 20:
-        recent = price_history[-20:]
-        sma20 = statistics.mean(recent)
-        if len(price_history) >= 2:
-            day_move = price_history[-1] / price_history[-2] - 1
-            if day_move <= -0.30:
-                add_test("chart pattern", "KILL", "30%+ one-day breakdown", 0.0)
-            elif q.price is not None and q.price < sma20 * 0.95:
-                add_test("chart pattern", "FLAG", "Price is below the 20-day trend; tread carefully", 0.5)
-            else:
-                add_test("chart pattern", "PASS", "20-day trend intact", 1.0)
-        else:
-            if q.price is not None and q.price < sma20 * 0.95:
-                add_test("chart pattern", "FLAG", "Price is below the 20-day trend; tread carefully", 0.5)
-            else:
-                add_test("chart pattern", "PASS", "20-day trend intact", 1.0)
-    else:
-        add_test("chart pattern", "SKIP", "Insufficient price history for 20-day trend check", None)
-
-    # Test 5: News sentiment.
-    if kill_hits:
-        add_test("news sentiment", "SKIP", "Existing existential-news kill already captured in headline catalyst", None)
-    elif any(kw in headlines for kw in ["fraud", "going concern", "sec"]):
-        add_test("news sentiment", "KILL", "Bad news flow", 0.0)
-    else:
-        add_test("news sentiment", "FLAG", "No existential news in the last batch of headlines", 0.5)
-
-    # Test 6: Analyst consensus.
-    if q.recom is not None and q.target_price is not None and q.price is not None:
-        if q.recom >= 4 and q.target_price < q.price * 0.8:
-            add_test(
-                "analyst consensus",
-                "KILL",
-                "Analyst consensus broken: sell/underweight with target >20% below price",
-                0.0,
-            )
-        elif q.recom <= 2:
-            add_test("analyst consensus", "FLAG", f"Consensus is constructive (recom {q.recom:.2f}, target {q.target_price:.2f})", 0.5)
-        else:
-            add_test("analyst consensus", "PASS", "Consensus not adverse", 1.0)
-    else:
-        add_test("analyst consensus", "SKIP", "Analyst consensus data incomplete", None)
-
-    # Test 7: Liquidity sanity.
-    if o.atm_bid_ask_spread is None:
-        add_test("liquidity sanity", "SKIP", "ATM spread unavailable", None)
-    elif o.atm_bid_ask_spread > 1.0:
-        add_test("liquidity sanity", "KILL", f"ATM options spread is wide (${o.atm_bid_ask_spread:.2f})", 0.0)
-    else:
-        add_test("liquidity sanity", "FLAG", f"Options liquidity is workable (${o.atm_bid_ask_spread:.2f} ATM spread)", 0.5)
-
-    # Test 8: Institutional ownership.
-    if q.inst_own is None:
-        add_test("institutional ownership", "SKIP", "Institutional ownership unavailable", None)
-    elif q.inst_own < 20:
-        add_test("institutional ownership", "KILL", f"Institutional ownership too low ({q.inst_own:.2f}%)", 0.0)
-    else:
-        add_test("institutional ownership", "FLAG", f"Institutional ownership is present ({q.inst_own:.2f}%)", 0.5)
-
-    # Final stage2 verdict: 3+ hard kills = kill; 2 = watch; 0-1 = pass.
-    unique_kills = list(dict.fromkeys(analysis.stage2_kills))
-    analysis.stage2_kills = unique_kills
-    analysis.stage2_tests = tests
-    analysis.stage2_hp_total = len(tests)
-    analysis.stage2_hp_left = analysis.stage2_hp_total - sum(test["hp_loss"] for test in tests)
-    analysis.stage2_score = round(
-        sum(test["score"] for test in tests if test["score"] is not None),
-        3,
-    )
-    if len(unique_kills) >= 3:
-        analysis.stage1_pass = False
-    else:
-        pass
+    Stage2Sieve().run(analysis, price_history=price_history)
 
 
 # -----------------------------
@@ -1121,7 +998,7 @@ def analyze_ticker(
         history = fetch_nasdaq_history(http, symbol, days=90)
         analyze_stage2(analysis, price_history=history)
 
-        if include_stage3 and len(analysis.stage2_kills) <= 2:
+        if include_stage3 and analysis.eligible_for_stage3:
             analysis.stage3 = stage3_analysis(analysis)
     else:
         analysis.stage2_tests = []
