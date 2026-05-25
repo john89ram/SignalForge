@@ -43,13 +43,13 @@ Exactly four legal verdict labels:
 
 | Verdict | Meaning |
 |---|---|
-| `DIAMOND` | Price <= MOS threshold, zero Stage 2 kills |
-| `ENTRY` | Price <= MOS threshold, 1-2 Stage 2 kills |
+| `DIAMOND` | Price ≤ MOS threshold, zero Stage 2 kills |
+| `ENTRY` | Price ≤ MOS threshold, 1–2 Stage 2 kills |
 | `NO ENTRY` | Price above MOS threshold, or Stage 1/2 disqualified |
 | `QC FAIL` | SEC data unavailable, share denominator sanity failed, or zero/missing revenue |
 
 **Important:** These labels are independent of Stage 2 tier names (Diamond/Strong/Standard/Watch/Eliminated).
-A Stage 2 Diamond tier name can come back as Stage 3 NO ENTRY if the stock is currently overvalued relative
+A Stage 2 Diamond tier name can come back as Stage 3 `NO ENTRY` if the stock is currently overvalued relative
 to its DCF fair value. That is not a contradiction — it means the HP sieve liked the name's behavior but
 the fundamentals do not support ownership at today's price.
 
@@ -66,10 +66,10 @@ the fundamentals do not support ownership at today's price.
 ## Acceptance Criteria for a Valid Stage 3 Run
 
 1. All eligible symbols (non-Eliminated from Stage 2) are processed unless cascade stops early
-2. Zero unhandled exceptions — errors produce QC FAIL verdicts, not crashes
-3. Output CSV is sorted by Stage 2 tier order (Diamond -> Strong -> Standard -> Watch), then by stage2_score descending within tier
+2. Zero unhandled exceptions — errors produce `QC FAIL` verdicts, not crashes
+3. Output CSV is sorted by Stage 2 tier order (Diamond → Strong → Standard → Watch), then by `stage2_score` descending within tier
 4. Audit JSONL contains one event per symbol plus a run summary event
-5. DIAMOND + ENTRY count is credible: if all processed names return NO ENTRY or QC FAIL, stop and investigate
+5. `DIAMOND` + `ENTRY` count is credible: if all processed names return `NO ENTRY` or `QC FAIL`, stop and investigate — do not treat that as a valid sieve result
 
 ---
 
