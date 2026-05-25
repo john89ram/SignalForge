@@ -1,0 +1,81 @@
+Stage 2 run started 20260525T174932Z
+input=/home/hermes/market-funnel/stages/stage2/input/Stage1_PASS.csv
+output=/home/hermes/market-funnel/stages/stage2/output/Stage2_Report.csv
+log=/home/hermes/market-funnel/stages/stage2/audit_logs/stage2_run_20260525T174932Z.log
+audit_jsonl=/home/hermes/market-funnel/stages/stage2/audit_logs/stage2_run_20260525T174932Z.jsonl
+rows=71
+workers=2
+include_stage3=False
+offline_input_only=False
+[  1/71   1.4%] AEVA tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=2 bad=2
+[  2/71   2.8%] AMKR tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=3 bad=1
+[  3/71   4.2%] ASST tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=1 bad=1
+[  4/71   5.6%] APLD tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=8/10 damage=2 weak=2 bad=0
+[  5/71   7.0%] BRZE tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=0 bad=2
+[  6/71   8.5%] BTDR tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=3 bad=0
+[  7/71   9.9%] CIFR tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=4 bad=0
+[  8/71  11.3%] CLSK tier=Diamond verdict=PASS eligible_for_stage3=TRUE hp_left=9/10 damage=1 weak=1 bad=0
+[  9/71  12.7%] CMPS tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 10/71  14.1%] CRML tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 11/71  15.5%] CSIQ tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 12/71  16.9%] ENPH tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=0 bad=3
+[ 13/71  18.3%] FLNC tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=2 bad=2
+[ 14/71  19.7%] FCEL tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=3/10 damage=7 weak=3 bad=2
+[ 15/71  21.1%] FSLY tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=8/10 damage=2 weak=2 bad=0
+[ 16/71  22.5%] FLY tier=Eliminated verdict=ELIMINATED eligible_for_stage3=FALSE hp_left=2/10 damage=8 weak=2 bad=3
+[ 17/71  23.9%] GLXY tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=8/10 damage=2 weak=2 bad=0
+[ 18/71  25.4%] GTLB tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=3/10 damage=7 weak=3 bad=2
+[ 19/71  26.8%] HIMX tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=3/10 damage=7 weak=3 bad=2
+[ 20/71  28.2%] HLIT tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=4 bad=0
+[ 21/71  29.6%] IRDM tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=3/10 damage=7 weak=1 bad=3
+[ 22/71  31.0%] LPTH tier=Eliminated verdict=ELIMINATED eligible_for_stage3=FALSE hp_left=2/10 damage=8 weak=0 bad=4
+[ 23/71  32.4%] IREN tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=3 bad=0
+[ 24/71  33.8%] LUNR tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=3 bad=1
+[ 25/71  35.2%] LWLG tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=0 bad=3
+[ 26/71  36.6%] NNE tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=0 bad=3
+[ 27/71  38.0%] MARA tier=Diamond verdict=PASS eligible_for_stage3=TRUE hp_left=10/10 damage=0 weak=0 bad=0
+[ 28/71  39.4%] NVTS tier=Eliminated verdict=ELIMINATED eligible_for_stage3=FALSE hp_left=2/10 damage=8 weak=2 bad=3
+[ 29/71  40.8%] OUST tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=2 bad=2
+[ 30/71  42.3%] PENG tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=0 bad=3
+[ 31/71  43.7%] PCT tier=Diamond verdict=PASS eligible_for_stage3=TRUE hp_left=9/10 damage=1 weak=1 bad=0
+[ 32/71  45.1%] PGY tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 33/71  46.5%] POET tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=3 bad=1
+[ 34/71  47.9%] QUBT tier=Diamond verdict=PASS eligible_for_stage3=TRUE hp_left=9/10 damage=1 weak=1 bad=0
+[ 35/71  49.3%] PPTA tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=0 bad=2
+[ 36/71  50.7%] RGTI tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=3 bad=0
+[ 37/71  52.1%] RIOT tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=3 bad=0
+[ 38/71  53.5%] RLAY tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=1 bad=1
+[ 39/71  54.9%] RUN tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=1 bad=1
+[ 40/71  56.3%] SEDG tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 41/71  57.7%] SMCI tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 42/71  59.2%] USAR tier=Diamond verdict=PASS eligible_for_stage3=TRUE hp_left=9/10 damage=1 weak=1 bad=0
+[ 43/71  60.6%] VIAV tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 44/71  62.0%] WULF tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=3 bad=0
+[ 45/71  63.4%] XE tier=Eliminated verdict=ELIMINATED eligible_for_stage3=FALSE hp_left=2/10 damage=8 weak=2 bad=3
+[ 46/71  64.8%] WYFI tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=2 bad=2
+[ 47/71  66.2%] AMPX tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 48/71  67.6%] BKSY tier=Eliminated verdict=ELIMINATED eligible_for_stage3=FALSE hp_left=2/10 damage=8 weak=2 bad=3
+[ 49/71  69.0%] INFQ tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 50/71  70.4%] FIG tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 51/71  71.8%] IONQ tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 52/71  73.2%] JOBY tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=3 bad=1
+[ 53/71  74.6%] KSS tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 54/71  76.1%] NOK tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=0 bad=3
+[ 55/71  77.5%] PATH tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=1 bad=1
+[ 56/71  78.9%] OKLO tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=2 bad=2
+[ 57/71  80.3%] PL tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 58/71  81.7%] PUMP tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=3 bad=1
+[ 59/71  83.1%] QBTS tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=8/10 damage=2 weak=2 bad=0
+[ 60/71  84.5%] RDW tier=Eliminated verdict=ELIMINATED eligible_for_stage3=FALSE hp_left=1/10 damage=9 weak=3 bad=3
+[ 61/71  85.9%] RBRK tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 62/71  87.3%] SMR tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 63/71  88.7%] SOC tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=1 bad=1
+[ 64/71  90.1%] UEC tier=Strong verdict=PASS eligible_for_stage3=TRUE hp_left=7/10 damage=3 weak=1 bad=1
+[ 65/71  91.5%] UUUU tier=Diamond verdict=PASS eligible_for_stage3=TRUE hp_left=9/10 damage=1 weak=1 bad=0
+[ 66/71  93.0%] VG tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 67/71  94.4%] VOYG tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=2 bad=2
+[ 68/71  95.8%] VSCO tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=6/10 damage=4 weak=2 bad=1
+[ 69/71  97.2%] VSH tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=0 bad=3
+[ 70/71  98.6%] WOLF tier=Standard verdict=PASS eligible_for_stage3=TRUE hp_left=5/10 damage=5 weak=1 bad=2
+[ 71/71 100.0%] YSS tier=Watch verdict=PASS eligible_for_stage3=TRUE hp_left=4/10 damage=6 weak=4 bad=1
+summary={"elapsed_seconds": 262.673, "event": "stage2_run_complete", "input_csv_path": "/home/hermes/market-funnel/stages/stage2/input/Stage1_PASS.csv", "input_rows": 71, "output_csv_path": "/home/hermes/market-funnel/stages/stage2/output/Stage2_Report.csv", "output_rows": 71, "tier_counts": {"Diamond": 6, "Eliminated": 6, "Standard": 27, "Strong": 15, "Watch": 17}, "timestamp_utc": "20260525T174932Z", "verdict_counts": {"ELIMINATED": 6, "PASS": 65}}
