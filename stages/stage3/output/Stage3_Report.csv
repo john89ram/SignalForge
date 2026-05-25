@@ -1,0 +1,7 @@
+symbol,stage2_tier,stage2_score,stage2_hp_left,stage3_verdict,stage3_category,weighted_fair_value,mos_threshold,current_price,undervaluation_pct,bear_value,realistic_value,bull_value,qc_fail_reason,share_count_source,share_qc_detail,watch_signal,kill_signal,stage2_kills,stage2_flags,sector,iv_rank,implied_vol
+MARA,Diamond,7.0,10,QC FAIL,B,,,13.81,,,,,share denominator sanity failed: implied $0.51B vs known $5.27B (90.4%),sec,implied $0.51B vs known $5.27B (90.4%),,,,,Technology,,
+CLSK,Diamond,6.5,9,QC FAIL,,,,15.97,,,,,SEC data unavailable or no live price,unavailable,,,,,Minor/isolated negative news flow,Finance,,
+PCT,Diamond,6.5,9,QC FAIL,,,,11.32,,,,,SEC data unavailable or no live price,unavailable,,,,,Hold/modest upside profile (12.3%),Industrials,,
+QUBT,Diamond,6.5,9,QC FAIL,,,,12.31,,,,,SEC data unavailable or no live price,unavailable,,,,,Institutional ownership 30-50% (42.2%),Technology,,
+USAR,Diamond,6.5,9,QC FAIL,,,,25.3,,,,,SEC data unavailable or no live price,unavailable,,,,,"Borderline liquidity: spread $0.11, volume 15,579, OI 23,261",Basic Materials,,
+UUUU,Diamond,6.5,9,QC FAIL,A,,,18.04,,,,,share denominator sanity failed: implied $0.25B vs known $4.51B (94.4%),sec,implied $0.25B vs known $4.51B (94.4%),,,,Broke 50-day moving average but not 200-day,Industrials,,

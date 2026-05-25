@@ -1,0 +1,22 @@
+Stage 3 run started 20260525T203505Z
+input=/home/hermes/market-funnel/stages/stage2/output/Stage2_Report.csv
+output=/home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv
+log=/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260525T203505Z.log
+audit_jsonl=/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260525T203505Z.jsonl
+rows=71
+eligible_rows=6
+input_tier_counts={"Diamond": 6, "Eliminated": 6, "Standard": 27, "Strong": 15, "Watch": 17}
+eligible_tier_counts={"Diamond": 6}
+tiers_requested=['Diamond']
+min_verdicts=5
+workers=2
+offline_input_only=False
+tier_start tier=Diamond symbols=6
+symbol_result symbol=CLSK stage2_tier=Diamond stage3_verdict=QC FAIL category= price=15.97 mos= qc_fail_reason=SEC data unavailable or no live price
+symbol_result symbol=MARA stage2_tier=Diamond stage3_verdict=QC FAIL category=B price=13.81 mos= qc_fail_reason=share denominator sanity failed: implied $0.51B vs known $5.27B (90.4%)
+symbol_result symbol=PCT stage2_tier=Diamond stage3_verdict=QC FAIL category= price=11.32 mos= qc_fail_reason=SEC data unavailable or no live price
+symbol_result symbol=QUBT stage2_tier=Diamond stage3_verdict=QC FAIL category= price=12.31 mos= qc_fail_reason=SEC data unavailable or no live price
+symbol_result symbol=USAR stage2_tier=Diamond stage3_verdict=QC FAIL category= price=25.3 mos= qc_fail_reason=SEC data unavailable or no live price
+symbol_result symbol=UUUU stage2_tier=Diamond stage3_verdict=QC FAIL category=A price=18.04 mos= qc_fail_reason=share denominator sanity failed: implied $0.25B vs known $4.51B (94.4%)
+cascade_decision tier_completed=Diamond symbols_in_tier=6 cumulative_symbols=6 actionable=0 decision=continue reason=actionable count 0 below threshold 5
+summary={"actionable_count": 0, "cascade_stopped_early": false, "event": "stage3_run_complete", "output_csv": "/home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv", "runtime_seconds": 5.446, "symbols_processed": 6, "tiers_consumed": ["Diamond"], "timestamp": "20260525T203510Z", "verdicts": {"QC FAIL": 6}}
