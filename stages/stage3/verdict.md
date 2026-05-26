@@ -1,6 +1,6 @@
 # Stage 3 Verdict
 
-**Last updated (UTC):** 2026-05-26T02:28:30Z
+**Last updated (UTC):** 2026-05-26T03:26:04Z
 
 ## Runner build status
 
@@ -58,7 +58,7 @@ Result:
 30 passed, 3 subtests passed
 ```
 
-## Latest Stage 3 regeneration
+## Latest Stage 3 full regeneration and self-heal trigger
 
 Command:
 
@@ -67,58 +67,110 @@ python -u -m stages.stage3.code.run_stage3 \
   stages/stage2/output/Stage2_Report.csv \
   --output-csv stages/stage3/output/Stage3_Report.csv \
   --workers 2 \
-  --min-verdicts 5 \
-  --tiers Diamond,Strong
+  --min-verdicts 0 \
+  --tiers Diamond,Strong,Standard,Watch
 ```
 
-Artifacts:
+Operator tee log:
+
+```text
+stages/stage3/audit_logs/stage3_operator_full_run_20260526T031807Z.log
+```
+
+Runner artifacts:
 
 ```text
 stages/stage3/output/Stage3_Report.csv
-stages/stage3/audit_logs/stage3_run_20260526T022830Z.log
-stages/stage3/audit_logs/stage3_run_20260526T022830Z.jsonl
-stages/stage3/audit_logs/stage3_operator_fv_alignment_20260526T022829Z.log
-stages/stage3/audit_logs/stage3_fair_value_target_alignment_guard_20260526T022830Z.md
+stages/stage3/audit_logs/stage3_run_20260526T031807Z.log
+stages/stage3/audit_logs/stage3_run_20260526T031807Z.jsonl
 ```
 
 Processed tiers:
 
 ```text
-Diamond, Strong
+Diamond, Strong, Standard, Watch
 ```
 
 Rows processed:
 
 ```text
-21
+65
 ```
 
 Verdict count:
 
 ```json
-{"NO ENTRY": 17, "DIAMOND": 1, "QC FAIL": 2, "ENTRY": 1}
+{"NO ENTRY": 47, "DIAMOND": 1, "QC FAIL": 7, "ENTRY": 10}
 ```
 
-Actionable mechanical outputs surfaced:
+Actionable mechanical outputs:
 
 ```text
-CLSK  DIAMOND  Category A  FV 21.10  MOS 16.88  Price 15.97
-PATH  ENTRY    Category A  FV 14.00  MOS 11.20  Price 10.93
+DIAMOND + ENTRY count: 11
 ```
 
-Diamond symbols processed:
+Patch-required target-alignment flags:
 
 ```text
-MARA, CLSK, PCT, QUBT, USAR, UUUU
+software_patch_required_count=45
 ```
 
-Diamond verdict count:
+Flagged symbols:
 
-```json
-{"NO ENTRY": 5, "DIAMOND": 1}
+```text
+MARA, PCT, QUBT, USAR, UUUU, APLD, GLXY, QBTS, ASST, IREN, RGTI, RIOT, RLAY, RUN, UEC, WULF, CIFR, CSIQ, IONQ, KSS, PL, SMCI, VG, VSCO, AMPX, FIG, INFQ, JOBY, LUNR, PGY, PUMP, RBRK, SEDG, SMR, VIAV, WOLF, AEVA, FLNC, LWLG, OUST, VOYG, VSH, WYFI, YSS, HIMX
 ```
 
-Strong was processed because Diamond produced 1 actionable `DIAMOND + ENTRY` name versus the threshold of 5.
+Option A self-heal command:
+
+```bash
+python -u stages/stage3/code/stage3_self_heal.py \
+  --report-csv stages/stage3/output/Stage3_Report.csv
+```
+
+Self-heal artifacts:
+
+```text
+stages/stage3/audit_logs/stage3_operator_self_heal_20260526T031923Z.log
+stages/stage3/audit_logs/stage3_self_heal_20260526T031923Z.log
+stages/stage3/audit_logs/stage3_self_heal_20260526T031923Z.jsonl
+stages/stage3/audit_logs/stage3_self_heal_prompt_20260526T031923Z.md
+```
+
+Self-heal result:
+
+```text
+Hermes invoked: true
+Return code: 0
+Runtime: 400.443 seconds
+```
+
+The nested remediation agent created and pushed a non-overwrite patch bundle instead of changing production Stage 3 code:
+
+```text
+trigger_id=20260526T032041Z_MARA_PCT_QUBT_PLUS42
+commit=5aaecb1 fix(stage3): bundle self-heal target guard remediation
+```
+
+Patch bundle paths:
+
+```text
+stages/stage3/code/patches/20260526T032041Z_MARA_PCT_QUBT_PLUS42/original/run_stage3__og_20260526T032041Z_MARA_PCT_QUBT_PLUS42.py
+stages/stage3/code/patches/20260526T032041Z_MARA_PCT_QUBT_PLUS42/patched/run_stage3__patched_20260526T032041Z_MARA_PCT_QUBT_PLUS42.py
+```
+
+Nested remediation classification summary:
+
+```text
+MODEL_FAMILY_MISSING: 23
+DATA_PROVIDER_ISSUE: 12
+NO_PATCH_SAFE: 7
+TARGET_OUTLIER: 3
+SOURCE_BUG: 0
+SHARE_DENOMINATOR_BUG: 0
+```
+
+The patch bundle changes target-alignment guard semantics in the review copy only: severe gaps remain visible, but `software_patch_required = TRUE` is reserved for confirmed patchable defects instead of every >50% target gap. Production `stages/stage3/code/run_stage3.py` was not promoted.
 
 ## Current decision
 

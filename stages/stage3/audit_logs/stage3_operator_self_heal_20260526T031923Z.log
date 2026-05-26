@@ -1,0 +1,10 @@
+stage3_operator_self_heal started 20260526T031923Z
+command=python -u stages/stage3/code/stage3_self_heal.py --report-csv stages/stage3/output/Stage3_Report.csv
+Stage 3 self-heal check complete
+- Patch-required rows: 45
+- Symbols: MARA, PCT, QUBT, USAR, UUUU, APLD, GLXY, QBTS, ASST, IREN, RGTI, RIOT, RLAY, RUN, UEC, WULF, CIFR, CSIQ, IONQ, KSS, PL, SMCI, VG, VSCO, AMPX, FIG, INFQ, JOBY, LUNR, PGY, PUMP, RBRK, SEDG, SMR, VIAV, WOLF, AEVA, FLNC, LWLG, OUST, VOYG, VSH, WYFI, YSS, HIMX
+- Hermes invoked: True
+- Log: /home/hermes/market-funnel/stages/stage3/audit_logs/stage3_self_heal_20260526T031923Z.log
+- Audit JSONL: /home/hermes/market-funnel/stages/stage3/audit_logs/stage3_self_heal_20260526T031923Z.jsonl
+- Prompt: /home/hermes/market-funnel/stages/stage3/audit_logs/stage3_self_heal_prompt_20260526T031923Z.md
+stage3_operator_self_heal ended 20260526T032604Z status=0
