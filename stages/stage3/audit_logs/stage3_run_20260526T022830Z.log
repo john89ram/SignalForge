@@ -1,0 +1,39 @@
+Stage 3 run started 20260526T022830Z
+input=/home/hermes/market-funnel/stages/stage2/output/Stage2_Report.csv
+output=/home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv
+log=/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260526T022830Z.log
+audit_jsonl=/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260526T022830Z.jsonl
+rows=71
+eligible_rows=21
+input_tier_counts={"Diamond": 6, "Eliminated": 6, "Standard": 27, "Strong": 15, "Watch": 17}
+eligible_tier_counts={"Diamond": 6, "Strong": 15}
+tiers_requested=['Diamond', 'Strong']
+min_verdicts=5
+workers=2
+offline_input_only=False
+tier_start tier=Diamond symbols=6
+symbol_result symbol=CLSK stage2_tier=Diamond stage3_verdict=DIAMOND category=A price=15.97 fv=21.102134844964773 stage2_target=21.5 finviz_target=20.21 fv_target_alignment=ALIGNED fv_target_gap_pct=-1.85 software_patch_required=FALSE mos=16.88170787597182 qc_fail_reason=
+symbol_result symbol=MARA stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=13.81 fv=0.2612154721742008 stage2_target=15.5 finviz_target=17.78 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-98.31 software_patch_required=TRUE mos=0.1306077360871004 qc_fail_reason=
+symbol_result symbol=PCT stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=11.32 fv=0.47775808999398484 stage2_target=14.0 finviz_target=12.71 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-96.24 software_patch_required=TRUE mos=0.23887904499699242 qc_fail_reason=
+symbol_result symbol=QUBT stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=12.31 fv=1.1414920598073741 stage2_target=18.0 finviz_target=17.83 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-93.6 software_patch_required=TRUE mos=0.5707460299036871 qc_fail_reason=
+symbol_result symbol=USAR stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=25.3 fv=8.023332084581625 stage2_target=35.0 finviz_target=37.43 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-77.08 software_patch_required=TRUE mos=4.011666042290813 qc_fail_reason=
+symbol_result symbol=UUUU stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=18.04 fv=0.3205562334851166 stage2_target=28.0 finviz_target=27.89 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-98.85 software_patch_required=TRUE mos=0.1602781167425583 qc_fail_reason=
+cascade_decision tier_completed=Diamond symbols_in_tier=6 cumulative_symbols=6 actionable=1 decision=continue reason=actionable count 1 below threshold 5
+tier_start tier=Strong symbols=15
+symbol_result symbol=APLD stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=45.87 fv=18.60362830636176 stage2_target=46.0 finviz_target=57.82 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-59.56 software_patch_required=TRUE mos=9.30181415318088 qc_fail_reason=
+symbol_result symbol=ASST stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=18.21 fv=1.364328562300095 stage2_target=26.0 finviz_target=29.0 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-94.75 software_patch_required=TRUE mos=0.6821642811500475 qc_fail_reason=
+symbol_result symbol=BTDR stage2_tier=Strong stage3_verdict=QC FAIL category= price=14.65 fv= stage2_target=20.0 finviz_target=21.52 fv_target_alignment=NO_TARGET_CHECK fv_target_gap_pct= software_patch_required=FALSE mos= qc_fail_reason=SEC data unavailable or no live price
+symbol_result symbol=FSLY stage2_tier=Strong stage3_verdict=NO ENTRY category=A price=16.32 fv=16.96693812042833 stage2_target=24.0 finviz_target=25.2 fv_target_alignment=ALIGNED fv_target_gap_pct=-29.3 software_patch_required=FALSE mos=13.573550496342666 qc_fail_reason=
+symbol_result symbol=GLXY stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=28.65 fv=-68.40599596301915 stage2_target=42.5 finviz_target=41.44 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-260.96 software_patch_required=TRUE mos=-34.202997981509576 qc_fail_reason=
+symbol_result symbol=IREN stage2_tier=Strong stage3_verdict=NO ENTRY category=A price=56.83 fv=19.47938350670693 stage2_target=80.0 finviz_target=78.85 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-75.3 software_patch_required=TRUE mos=15.583506805365545 qc_fail_reason=
+symbol_result symbol=RGTI stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=26.42 fv=0.13514493536210148 stage2_target=30.5 finviz_target=31.0 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-99.56 software_patch_required=TRUE mos=0.06757246768105074 qc_fail_reason=
+symbol_result symbol=RIOT stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=24.49 fv=-0.23732670650632426 stage2_target=25.0 finviz_target=26.41 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-100.9 software_patch_required=TRUE mos=-0.11866335325316213 qc_fail_reason=
+symbol_result symbol=RLAY stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=13.53 fv=1.0442299158892794 stage2_target=21.5 finviz_target=24.0 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-95.14 software_patch_required=TRUE mos=0.5221149579446397 qc_fail_reason=
+symbol_result symbol=RUN stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=14.62 fv=-4.615934446474782 stage2_target=20.0 finviz_target=19.03 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-123.08 software_patch_required=TRUE mos=-2.307967223237391 qc_fail_reason=
+symbol_result symbol=WULF stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=22.82 fv=6.006538937115236 stage2_target=30.0 finviz_target=30.2 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-79.98 software_patch_required=TRUE mos=3.003269468557618 qc_fail_reason=
+symbol_result symbol=PATH stage2_tier=Strong stage3_verdict=ENTRY category=A price=10.93 fv=13.997484615802772 stage2_target=13.0 finviz_target=13.67 fv_target_alignment=ALIGNED fv_target_gap_pct=2.4 software_patch_required=FALSE mos=11.197987692642219 qc_fail_reason=
+symbol_result symbol=QBTS stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=29.4 fv=0.8836136115155898 stage2_target=37.0 finviz_target=36.38 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-97.57 software_patch_required=TRUE mos=0.4418068057577949 qc_fail_reason=
+symbol_result symbol=SOC stage2_tier=Strong stage3_verdict=QC FAIL category= price=14.74 fv= stage2_target=24.0 finviz_target=25.0 fv_target_alignment=NO_TARGET_CHECK fv_target_gap_pct= software_patch_required=FALSE mos= qc_fail_reason=zero or missing revenue
+symbol_result symbol=UEC stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=13.02 fv=0.9316540435871665 stage2_target=19.0 finviz_target=19.66 fv_target_alignment=SEVERE_MISALIGNMENT fv_target_gap_pct=-95.1 software_patch_required=TRUE mos=0.46582702179358326 qc_fail_reason=
+cascade_decision tier_completed=Strong symbols_in_tier=15 cumulative_symbols=21 actionable=2 decision=continue reason=actionable count 2 below threshold 5
+summary={"actionable_count": 2, "cascade_stopped_early": false, "event": "stage3_run_complete", "output_csv": "/home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv", "runtime_seconds": 19.931, "symbols_processed": 21, "tiers_consumed": ["Diamond", "Strong"], "timestamp": "20260526T022849Z", "verdicts": {"DIAMOND": 1, "ENTRY": 1, "NO ENTRY": 17, "QC FAIL": 2}}

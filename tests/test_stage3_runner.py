@@ -23,6 +23,7 @@ def _write_stage2_csv(path: Path, rows):
         "stage2_weak_text",
         "stage2_flags",
         "price_proxy",
+        "one_yr_target",
         "eligible_for_stage3",
     ]
     with path.open("w", encoding="utf-8", newline="") as fh:
@@ -253,6 +254,83 @@ def test_eliminated_stage2_rows_are_skipped(tmp_path, monkeypatch):
     assert processed == ["AAA"]
     assert result.symbols_processed == 1
     assert list(csv.DictReader(output_csv.open(encoding="utf-8")))[0]["symbol"] == "AAA"
+
+
+def test_fair_value_target_misalignment_requires_software_patch(monkeypatch):
+    class FakeResponse:
+        text = "html"
+
+    class FakeHTTP:
+        def get(self, url):
+            return FakeResponse()
+
+    monkeypatch.setattr(run_stage3, "HTTP", lambda timeout=10, retries=1: FakeHTTP())
+    monkeypatch.setattr(
+        run_stage3,
+        "parse_finviz_quote",
+        lambda html, symbol: QuoteSnapshot(symbol=symbol, price=63.64, target_price=69.95),
+    )
+    monkeypatch.setattr(run_stage3, "load_sec_companyfacts", lambda http, symbol: SECFacts(cik="1"))
+    monkeypatch.setattr(
+        run_stage3,
+        "stage3_analysis",
+        lambda analysis: {
+            "category": "B",
+            "weighted_fair_value": 1.16,
+            "mos_threshold": 0.58,
+            "current_price": 63.64,
+            "undervaluation_pct": -98.17,
+        },
+    )
+
+    result = run_stage3._process_stage3_row(_base_row("IONQ", one_yr_target="65.00"))
+
+    assert result["stage2_one_yr_target"] == 65.0
+    assert result["finviz_target_price"] == 69.95
+    assert result["fair_value_target_alignment"] == "SEVERE_MISALIGNMENT"
+    assert result["software_patch_required"] == "TRUE"
+    assert "Stage 3 FV $1.16" in result["fair_value_target_gap_detail"]
+    assert "Stage 2 target $65.00" in result["fair_value_target_gap_detail"]
+    assert "Finviz target $69.95" in result["fair_value_target_gap_detail"]
+
+
+def test_target_misalignment_is_written_to_csv_log_and_jsonl(tmp_path, monkeypatch):
+    input_csv = tmp_path / "Stage2_Report.csv"
+    output_csv = tmp_path / "Stage3_Report.csv"
+    rows = [_base_row("MARA", "Diamond", one_yr_target="15.50")]
+    _write_stage2_csv(input_csv, rows)
+
+    def fake(row, offline_input_only=False):
+        return {
+            **_stub_process({"MARA": "NO ENTRY"})(row, offline_input_only),
+            "weighted_fair_value": 0.26,
+            "stage2_one_yr_target": 15.5,
+            "finviz_target_price": 17.78,
+            "target_benchmark_price": 15.5,
+            "fair_value_target_gap_pct": -98.32,
+            "fair_value_target_alignment": "SEVERE_MISALIGNMENT",
+            "software_patch_required": "TRUE",
+            "fair_value_target_gap_detail": "Stage 3 FV $0.26 is -98.3% below Stage 2 target $15.50; patch required",
+        }
+
+    monkeypatch.setattr(run_stage3, "_process_stage3_row", fake)
+
+    result = run_stage3.run(input_csv, output_csv_path=output_csv, log_dir=tmp_path, min_verdicts=0, workers=1, show_progress=False)
+
+    [output_row] = list(csv.DictReader(output_csv.open(encoding="utf-8")))
+    assert output_row["software_patch_required"] == "TRUE"
+    assert output_row["fair_value_target_alignment"] == "SEVERE_MISALIGNMENT"
+    assert output_row["stage2_one_yr_target"] == "15.5"
+    log_text = Path(result.log_path).read_text(encoding="utf-8")
+    assert "software_patch_required=TRUE" in log_text
+    assert "fv_target_alignment=SEVERE_MISALIGNMENT" in log_text
+    symbol_events = [
+        json.loads(line)
+        for line in Path(result.audit_jsonl_path).read_text(encoding="utf-8").splitlines()
+        if json.loads(line).get("event") == "stage3_symbol_result"
+    ]
+    assert symbol_events[0]["software_patch_required"] == "TRUE"
+    assert symbol_events[0]["fair_value_target_alignment"] == "SEVERE_MISALIGNMENT"
 
 
 def test_audit_jsonl_contains_all_event_types(tmp_path, monkeypatch):

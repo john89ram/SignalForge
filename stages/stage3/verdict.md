@@ -1,6 +1,6 @@
 # Stage 3 Verdict
 
-**Last updated (UTC):** 2026-05-26T02:16:14Z
+**Last updated (UTC):** 2026-05-26T02:28:30Z
 
 ## Runner build status
 
@@ -75,9 +75,10 @@ Artifacts:
 
 ```text
 stages/stage3/output/Stage3_Report.csv
-stages/stage3/audit_logs/stage3_run_20260526T021614Z.log
-stages/stage3/audit_logs/stage3_run_20260526T021614Z.jsonl
-stages/stage3/audit_logs/stage3_price_fair_value_realign_20260526T021614Z.md
+stages/stage3/audit_logs/stage3_run_20260526T022830Z.log
+stages/stage3/audit_logs/stage3_run_20260526T022830Z.jsonl
+stages/stage3/audit_logs/stage3_operator_fv_alignment_20260526T022829Z.log
+stages/stage3/audit_logs/stage3_fair_value_target_alignment_guard_20260526T022830Z.md
 ```
 
 Processed tiers:
@@ -123,6 +124,7 @@ Strong was processed because Diamond produced 1 actionable `DIAMOND + ENTRY` nam
 
 **Runner mechanics:** GREEN  
 **Source alignment fixes:** PARTIAL GREEN  
+**Fair-value target guard:** GREEN  
 **Generic DCF baseline:** USABLE FOR TRIAGE  
 **Final fair-value methodology:** NOT FULLY REALIGNED
 
@@ -133,4 +135,4 @@ The generic Stage 3 DCF now has better source alignment, but it is still not suf
 - HIMS, which needs the HIMS-specific Category A paradox / patent-risk overlay,
 - other names where Stage 2 `one_yr_target` materially diverges from mechanical Stage 3 FV.
 
-Next required engineering work: add `one_yr_target` to Stage 3 output, add target-vs-model divergence flags, and route tickers to model families instead of forcing every name through the same generic FCF DCF.
+Next required engineering work: route tickers to model families instead of forcing every name through the same generic FCF DCF. `one_yr_target`, Finviz target, and target-vs-FV divergence flags are now present in Stage 3 output and logs; rows with `software_patch_required = TRUE` should be treated as engineering/model-source remediation candidates before trusting the mechanical fair value.

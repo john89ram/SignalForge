@@ -249,6 +249,13 @@ Write to `stages/stage3/output/Stage3_Report.csv`.
 | `stage3_verdict` | `summary_verdict()` | DIAMOND/ENTRY/NO ENTRY/QC FAIL |
 | `stage3_category` | `s3["category"]` | A or B |
 | `weighted_fair_value` | `s3["weighted_fair_value"]` | float or blank |
+| `stage2_one_yr_target` | Stage 2 `one_yr_target` | Analyst target carried from Stage 2 input |
+| `finviz_target_price` | fresh Finviz quote | Live analyst target from Finviz |
+| `target_benchmark_price` | closest available target | Benchmark used for FV gap calculation |
+| `fair_value_target_gap_pct` | computed | Stage 3 FV gap vs closest target benchmark |
+| `fair_value_target_alignment` | computed | `ALIGNED`, `SEVERE_MISALIGNMENT`, or `NO_TARGET_CHECK` |
+| `software_patch_required` | computed | `TRUE` when FV is >50% away from every available positive target |
+| `fair_value_target_gap_detail` | computed | Human-readable target/FV comparison and patch warning |
 | `mos_threshold` | `s3["mos_threshold"]` | float or blank |
 | `current_price` | `s3["current_price"]` | float (from fresh Finviz fetch) |
 | `undervaluation_pct` | `s3["undervaluation_pct"]` | positive = undervalued |
@@ -301,6 +308,13 @@ Emit four JSONL event types to `stages/stage3/audit_logs/stage3_run_<timestamp>.
   "stage3_verdict": "ENTRY",
   "stage3_category": "B",
   "weighted_fair_value": 14.20,
+  "stage2_one_yr_target": 15.50,
+  "finviz_target_price": 17.78,
+  "target_benchmark_price": 15.50,
+  "fair_value_target_gap_pct": -8.39,
+  "fair_value_target_alignment": "ALIGNED",
+  "software_patch_required": "FALSE",
+  "fair_value_target_gap_detail": "Stage 3 FV $14.20 is -8.4% below closest benchmark Stage 2 target $15.50; Stage 2 target $15.50; Finviz target $17.78",
   "mos_threshold": 7.10,
   "current_price": 16.45,
   "undervaluation_pct": -13.6,

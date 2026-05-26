@@ -43,6 +43,7 @@ DEFAULT_LOG_DIR = REPO_ROOT / "stages" / "stage3" / "audit_logs"
 DEFAULT_TIERS = ["Diamond", "Strong", "Standard", "Watch"]
 TIER_ORDER = {"Diamond": 0, "Strong": 1, "Standard": 2, "Watch": 3, "Eliminated": 4, "": 5}
 ACTIONABLE_VERDICTS = {"DIAMOND", "ENTRY"}
+FAIR_VALUE_TARGET_MISALIGNMENT_PCT = 50.0
 
 
 @dataclass(frozen=True)
@@ -114,6 +115,60 @@ def _csv_cell(value: Any) -> Any:
     return value
 
 
+def _fmt_price(value: Optional[float]) -> str:
+    return "n/a" if value is None else f"${value:.2f}"
+
+
+def _target_alignment(
+    weighted_fair_value: Optional[float],
+    stage2_target: Optional[float],
+    finviz_target: Optional[float],
+) -> Dict[str, Any]:
+    """Compare Stage 3 fair value to external target benchmarks.
+
+    The guard intentionally uses the closest available benchmark so a stale or
+    outlier target source does not create a false software-patch requirement.
+    If Stage 3 is still more than FAIR_VALUE_TARGET_MISALIGNMENT_PCT away from
+    every available positive target, the output is a severe model/source
+    misalignment that needs a software patch before the FV can be trusted.
+    """
+    targets = [
+        ("Stage 2 target", stage2_target),
+        ("Finviz target", finviz_target),
+    ]
+    usable_targets = [(label, value) for label, value in targets if value is not None and value > 0]
+    if weighted_fair_value is None or not usable_targets:
+        return {
+            "target_benchmark_price": "",
+            "fair_value_target_gap_pct": "",
+            "fair_value_target_alignment": "NO_TARGET_CHECK",
+            "software_patch_required": "FALSE",
+            "fair_value_target_gap_detail": "target check skipped: missing Stage 3 FV or positive target benchmark",
+        }
+
+    comparisons = [
+        (label, value, ((weighted_fair_value - value) / value) * 100.0)
+        for label, value in usable_targets
+    ]
+    benchmark_label, benchmark_value, gap_pct = min(comparisons, key=lambda item: abs(item[2]))
+    severe = abs(gap_pct) > FAIR_VALUE_TARGET_MISALIGNMENT_PCT
+    direction = "above" if gap_pct > 0 else "below"
+    target_detail = "; ".join(f"{label} {_fmt_price(value)}" for label, value in usable_targets)
+    detail = (
+        f"Stage 3 FV {_fmt_price(weighted_fair_value)} is {gap_pct:.1f}% {direction} "
+        f"closest benchmark {benchmark_label} {_fmt_price(benchmark_value)}; {target_detail}"
+    )
+    if severe:
+        detail += "; software patch required before trusting fair value"
+    return {
+        "target_benchmark_price": benchmark_value,
+        "fair_value_target_gap_pct": round(gap_pct, 2),
+        "fair_value_target_alignment": "SEVERE_MISALIGNMENT" if severe else "ALIGNED",
+        "software_patch_required": "TRUE" if severe else "FALSE",
+        "fair_value_target_gap_detail": detail,
+    }
+
+
 def _parse_pipe_text(text: str) -> List[str]:
     return [part.strip() for part in str(text or "").split("|") if part.strip()]
 
@@ -182,6 +237,13 @@ def _fieldnames() -> List[str]:
         "stage3_verdict",
         "stage3_category",
         "weighted_fair_value",
+        "stage2_one_yr_target",
+        "finviz_target_price",
+        "target_benchmark_price",
+        "fair_value_target_gap_pct",
+        "fair_value_target_alignment",
+        "software_patch_required",
+        "fair_value_target_gap_detail",
         "mos_threshold",
         "current_price",
         "undervaluation_pct",
@@ -210,6 +272,13 @@ def _failed_analysis(symbol: str, stage2_row: dict, reason: str) -> Dict[str, An
         "stage3_verdict": "QC FAIL",
         "stage3_category": "",
         "weighted_fair_value": "",
+        "stage2_one_yr_target": _csv_cell(_float(stage2_row, "one_yr_target")),
+        "finviz_target_price": "",
+        "target_benchmark_price": "",
+        "fair_value_target_gap_pct": "",
+        "fair_value_target_alignment": "NO_TARGET_CHECK",
+        "software_patch_required": "FALSE",
+        "fair_value_target_gap_detail": "target check skipped: Stage 3 QC FAIL",
         "mos_threshold": "",
         "current_price": "",
         "undervaluation_pct": "",
@@ -231,6 +300,14 @@ def _failed_analysis(symbol: str, stage2_row: dict, reason: str) -> Dict[str, An
 
 def _result_row(stage2_row: dict, analysis: TickerAnalysis) -> Dict[str, Any]:
     s3 = analysis.stage3 or {}
+    weighted_fair_value = s3.get("weighted_fair_value")
+    try:
+        weighted_fair_value_float = float(weighted_fair_value) if weighted_fair_value not in (None, "") else None
+    except (TypeError, ValueError):
+        weighted_fair_value_float = None
+    stage2_target = _float(stage2_row, "one_yr_target")
+    finviz_target = analysis.quote.target_price
+    alignment = _target_alignment(weighted_fair_value_float, stage2_target, finviz_target)
     return {
         "symbol": analysis.symbol,
         "stage2_tier": analysis.stage2_tier or _get_tier(stage2_row),
@@ -238,7 +315,14 @@ def _result_row(stage2_row: dict, analysis: TickerAnalysis) -> Dict[str, Any]:
         "stage2_hp_left": stage2_row.get("stage2_hp_left", analysis.stage2_hp_left),
         "stage3_verdict": summary_verdict(analysis),
         "stage3_category": _csv_cell(s3.get("category")),
-        "weighted_fair_value": _csv_cell(s3.get("weighted_fair_value")),
+        "weighted_fair_value": _csv_cell(weighted_fair_value),
+        "stage2_one_yr_target": _csv_cell(stage2_target),
+        "finviz_target_price": _csv_cell(finviz_target),
+        "target_benchmark_price": _csv_cell(alignment["target_benchmark_price"]),
+        "fair_value_target_gap_pct": _csv_cell(alignment["fair_value_target_gap_pct"]),
+        "fair_value_target_alignment": alignment["fair_value_target_alignment"],
+        "software_patch_required": alignment["software_patch_required"],
+        "fair_value_target_gap_detail": alignment["fair_value_target_gap_detail"],
         "mos_threshold": _csv_cell(s3.get("mos_threshold")),
         "current_price": _csv_cell(s3.get("current_price", analysis.quote.price)),
         "undervaluation_pct": _csv_cell(s3.get("undervaluation_pct")),
@@ -392,6 +476,13 @@ def run(
                 "stage3_verdict": result.get("stage3_verdict"),
                 "stage3_category": result.get("stage3_category"),
                 "weighted_fair_value": result.get("weighted_fair_value"),
+                "stage2_one_yr_target": result.get("stage2_one_yr_target"),
+                "finviz_target_price": result.get("finviz_target_price"),
+                "target_benchmark_price": result.get("target_benchmark_price"),
+                "fair_value_target_gap_pct": result.get("fair_value_target_gap_pct"),
+                "fair_value_target_alignment": result.get("fair_value_target_alignment"),
+                "software_patch_required": result.get("software_patch_required"),
+                "fair_value_target_gap_detail": result.get("fair_value_target_gap_detail"),
                 "mos_threshold": result.get("mos_threshold"),
                 "current_price": result.get("current_price"),
                 "undervaluation_pct": result.get("undervaluation_pct"),
@@ -401,8 +492,12 @@ def run(
             log_line = (
                 f"symbol_result symbol={result.get('symbol')} stage2_tier={result.get('stage2_tier')} "
                 f"stage3_verdict={result.get('stage3_verdict')} category={result.get('stage3_category')} "
-                f"price={result.get('current_price')} mos={result.get('mos_threshold')} "
-                f"qc_fail_reason={result.get('qc_fail_reason')}"
+                f"price={result.get('current_price')} fv={result.get('weighted_fair_value')} "
+                f"stage2_target={result.get('stage2_one_yr_target')} finviz_target={result.get('finviz_target_price')} "
+                f"fv_target_alignment={result.get('fair_value_target_alignment')} "
+                f"fv_target_gap_pct={result.get('fair_value_target_gap_pct')} "
+                f"software_patch_required={result.get('software_patch_required')} "
+                f"mos={result.get('mos_threshold')} qc_fail_reason={result.get('qc_fail_reason')}"
             )
             log_lines.append(log_line)
             if show_progress:
