@@ -1,0 +1,39 @@
+Stage 3 run started 20260526T021614Z
+input=/home/hermes/market-funnel/stages/stage2/output/Stage2_Report.csv
+output=/home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv
+log=/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260526T021614Z.log
+audit_jsonl=/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260526T021614Z.jsonl
+rows=71
+eligible_rows=21
+input_tier_counts={"Diamond": 6, "Eliminated": 6, "Standard": 27, "Strong": 15, "Watch": 17}
+eligible_tier_counts={"Diamond": 6, "Strong": 15}
+tiers_requested=['Diamond', 'Strong']
+min_verdicts=5
+workers=2
+offline_input_only=False
+tier_start tier=Diamond symbols=6
+symbol_result symbol=CLSK stage2_tier=Diamond stage3_verdict=DIAMOND category=A price=15.97 mos=16.88170787597182 qc_fail_reason=
+symbol_result symbol=MARA stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=13.81 mos=0.1306077360871004 qc_fail_reason=
+symbol_result symbol=PCT stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=11.32 mos=0.23887904499699242 qc_fail_reason=
+symbol_result symbol=QUBT stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=12.31 mos=0.5707460299036871 qc_fail_reason=
+symbol_result symbol=USAR stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=25.3 mos=4.011666042290813 qc_fail_reason=
+symbol_result symbol=UUUU stage2_tier=Diamond stage3_verdict=NO ENTRY category=B price=18.04 mos=0.1602781167425583 qc_fail_reason=
+cascade_decision tier_completed=Diamond symbols_in_tier=6 cumulative_symbols=6 actionable=1 decision=continue reason=actionable count 1 below threshold 5
+tier_start tier=Strong symbols=15
+symbol_result symbol=APLD stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=45.87 mos=9.30181415318088 qc_fail_reason=
+symbol_result symbol=ASST stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=18.21 mos=0.6821642811500475 qc_fail_reason=
+symbol_result symbol=BTDR stage2_tier=Strong stage3_verdict=QC FAIL category= price=14.65 mos= qc_fail_reason=SEC data unavailable or no live price
+symbol_result symbol=FSLY stage2_tier=Strong stage3_verdict=NO ENTRY category=A price=16.32 mos=13.573550496342666 qc_fail_reason=
+symbol_result symbol=GLXY stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=28.65 mos=-34.202997981509576 qc_fail_reason=
+symbol_result symbol=IREN stage2_tier=Strong stage3_verdict=NO ENTRY category=A price=56.83 mos=15.583506805365545 qc_fail_reason=
+symbol_result symbol=RGTI stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=26.42 mos=0.06757246768105074 qc_fail_reason=
+symbol_result symbol=RIOT stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=24.49 mos=-0.11866335325316213 qc_fail_reason=
+symbol_result symbol=RLAY stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=13.53 mos=0.5221149579446397 qc_fail_reason=
+symbol_result symbol=RUN stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=14.62 mos=-2.307967223237391 qc_fail_reason=
+symbol_result symbol=WULF stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=22.82 mos=3.003269468557618 qc_fail_reason=
+symbol_result symbol=PATH stage2_tier=Strong stage3_verdict=ENTRY category=A price=10.93 mos=11.197987692642219 qc_fail_reason=
+symbol_result symbol=QBTS stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=29.4 mos=0.4418068057577949 qc_fail_reason=
+symbol_result symbol=SOC stage2_tier=Strong stage3_verdict=QC FAIL category= price=14.74 mos= qc_fail_reason=zero or missing revenue
+symbol_result symbol=UEC stage2_tier=Strong stage3_verdict=NO ENTRY category=B price=13.02 mos=0.46582702179358326 qc_fail_reason=
+cascade_decision tier_completed=Strong symbols_in_tier=15 cumulative_symbols=21 actionable=2 decision=continue reason=actionable count 2 below threshold 5
+summary={"actionable_count": 2, "cascade_stopped_early": false, "event": "stage3_run_complete", "output_csv": "/home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv", "runtime_seconds": 19.391, "symbols_processed": 21, "tiers_consumed": ["Diamond", "Strong"], "timestamp": "20260526T021633Z", "verdicts": {"DIAMOND": 1, "ENTRY": 1, "NO ENTRY": 17, "QC FAIL": 2}}

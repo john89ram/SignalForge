@@ -407,7 +407,95 @@ class ScreenerTests(unittest.TestCase):
         self.assertIsNone(stage3["share_qc_detail"])
         self.assertLess(stage3["weighted_fair_value"] * 100_000_000.0, 5_000_000_000.0)
 
-    def test_stage3_share_sanity_still_fails_high_implied_valuation(self):
+    def test_load_sec_companyfacts_chooses_broadest_latest_annual_revenue_tag(self):
+        class StubResp:
+            def __init__(self, payload):
+                self.payload = payload
+
+            def json(self):
+                return self.payload
+
+        class StubHTTP:
+            def get(self, url, headers=None):
+                if url.endswith("company_tickers.json"):
+                    return StubResp({"0": {"ticker": "BROAD", "cik_str": 123456}})
+                return StubResp(
+                    {
+                        "facts": {
+                            "us-gaap": {
+                                "RevenueFromContractWithCustomerExcludingAssessedTax": {
+                                    "units": {
+                                        "USD": [
+                                            {"end": "2025-12-31", "val": 58_000_000, "form": "10-K", "fp": "FY"}
+                                        ]
+                                    }
+                                },
+                                "Revenues": {
+                                    "units": {
+                                        "USD": [
+                                            {"end": "2025-12-31", "val": 907_000_000, "form": "10-K", "fp": "FY"}
+                                        ]
+                                    }
+                                },
+                            }
+                        }
+                    }
+                )
+
+        facts = screener.load_sec_companyfacts(StubHTTP(), "BROAD")
+
+        self.assertIsNotNone(facts)
+        assert facts is not None
+        self.assertEqual(facts.revenue, [("2025-12-31", 907_000_000.0)])
+
+    def test_load_sec_companyfacts_prefers_annual_flow_facts_over_latest_quarter(self):
+        class StubResp:
+            def __init__(self, payload):
+                self.payload = payload
+
+            def json(self):
+                return self.payload
+
+        class StubHTTP:
+            def get(self, url, headers=None):
+                if url.endswith("company_tickers.json"):
+                    return StubResp({"0": {"ticker": "FLOW", "cik_str": 123456}})
+                return StubResp(
+                    {
+                        "facts": {
+                            "us-gaap": {
+                                "Revenues": {
+                                    "units": {"USD": [{"end": "2025-12-31", "val": 100_000_000, "form": "10-K", "fp": "FY"}]}
+                                },
+                                "OperatingIncomeLoss": {
+                                    "units": {
+                                        "USD": [
+                                            {"end": "2025-12-31", "val": 20_000_000, "form": "10-K", "fp": "FY"},
+                                            {"end": "2026-03-31", "val": -5_000_000, "form": "10-Q", "fp": "Q1"},
+                                        ]
+                                    }
+                                },
+                                "NetCashProvidedByUsedInOperatingActivities": {
+                                    "units": {
+                                        "USD": [
+                                            {"end": "2025-12-31", "val": 30_000_000, "form": "10-K", "fp": "FY"},
+                                            {"end": "2026-03-31", "val": 1_000_000, "form": "10-Q", "fp": "Q1"},
+                                        ]
+                                    }
+                                },
+                            }
+                        }
+                    }
+                )
+
+        facts = screener.load_sec_companyfacts(StubHTTP(), "FLOW")
+
+        self.assertIsNotNone(facts)
+        assert facts is not None
+        self.assertEqual(facts.op_income, [("2025-12-31", 20_000_000.0)])
+        self.assertEqual(facts.op_cash_flow, [("2025-12-31", 30_000_000.0)])
+
+    def test_stage3_share_sanity_allows_high_implied_valuation_signal(self):
         analysis = TickerAnalysis(
             symbol="HIGHDCF",
             quote=QuoteSnapshot(symbol="HIGHDCF", price=1.0, market_cap=100_000_000.0),
@@ -425,9 +513,9 @@ class ScreenerTests(unittest.TestCase):
 
         self.assertIsNotNone(stage3)
         assert stage3 is not None
-        self.assertEqual(stage3["verdict"], "QC FAIL")
-        self.assertIn("share denominator sanity failed", stage3["qc_fail_reason"])
-        self.assertIn("implied $", stage3["share_qc_detail"])
+        self.assertNotEqual(stage3.get("verdict"), "QC FAIL")
+        self.assertIsNone(stage3["share_qc_detail"])
+        self.assertGreater(stage3["weighted_fair_value"], analysis.quote.price)
 
     def test_summary_verdict_uses_only_legal_labels(self):
         stage1_only = TickerAnalysis(symbol="X", quote=QuoteSnapshot(symbol="X", price=25.0), barchart=BarchartSnapshot(), options=OptionsSnapshot(), stage1_pass=True)

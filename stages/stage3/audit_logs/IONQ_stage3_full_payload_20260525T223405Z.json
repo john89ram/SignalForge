@@ -1,0 +1,751 @@
+{
+  "timestamp": "20260525T223405Z",
+  "runner": {
+    "input_csv_path": "/home/hermes/market-funnel/stages/stage3/output/IONQ_Stage2_input_20260525T223405Z.csv",
+    "output_csv_path": "/home/hermes/market-funnel/stages/stage3/output/IONQ_Stage3_Report_20260525T223405Z.csv",
+    "log_path": "/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260525T223405Z.log",
+    "audit_jsonl_path": "/home/hermes/market-funnel/stages/stage3/audit_logs/stage3_run_20260525T223405Z.jsonl",
+    "input_rows": 1,
+    "eligible_rows": 1,
+    "symbols_processed": 1,
+    "tiers_consumed": [
+      "Standard"
+    ],
+    "cascade_stopped_early": false,
+    "verdict_counts": {
+      "NO ENTRY": 1
+    },
+    "actionable_count": 0,
+    "elapsed_seconds": 1.845
+  },
+  "stage2_row": {
+    "symbol": "IONQ",
+    "name": "IonQ, Inc.",
+    "master_exchange": "NYSE",
+    "sector": "Technology",
+    "industry": "EDP Services",
+    "price_proxy": "58.89",
+    "share_volume": "52650276.0",
+    "market_cap": "23754899491.0",
+    "one_yr_target": "65.0",
+    "stage1_pass": "PASS",
+    "stage1_reasons": "",
+    "stage2_verdict": "PASS",
+    "eligible_for_stage3": "TRUE",
+    "hp_tier": "Standard",
+    "stage2_hp_total": "10",
+    "stage2_hp_left": "6",
+    "stage2_damage": "4",
+    "stage2_score": "5.0",
+    "stage2_bad_count": "1",
+    "stage2_weak_count": "2",
+    "stage2_bad_text": "Execution impaired: spread $0.35, volume 49,138, OI 54,090",
+    "stage2_weak_text": "2 meme signals: meme/retail headline language, weak/negative forward EPS | Hold/modest upside profile (9.9%)",
+    "iv_spike_diagnosis_status": "PASS",
+    "iv_spike_diagnosis_hp_loss": "0",
+    "iv_spike_diagnosis_detail": "Elevated IV has a visible fundamental/sector catalyst",
+    "meme_stock_status": "WEAK",
+    "meme_stock_hp_loss": "1",
+    "meme_stock_detail": "2 meme signals: meme/retail headline language, weak/negative forward EPS",
+    "chart_pattern_status": "PASS",
+    "chart_pattern_hp_loss": "0",
+    "chart_pattern_detail": "Consolidating/steady chart; no extension or breakdown detected",
+    "news_sentiment_status": "PASS",
+    "news_sentiment_hp_loss": "0",
+    "news_sentiment_detail": "Neutral or positive recent news flow",
+    "analyst_consensus_status": "WEAK",
+    "analyst_consensus_hp_loss": "1",
+    "analyst_consensus_detail": "Hold/modest upside profile (9.9%)",
+    "liquidity_status": "BAD",
+    "liquidity_hp_loss": "2",
+    "liquidity_detail": "Execution impaired: spread $0.35, volume 49,138, OI 54,090",
+    "institutional_ownership_status": "PASS",
+    "institutional_ownership_hp_loss": "0",
+    "institutional_ownership_detail": "Institutional ownership above 50% (55.5%)"
+  },
+  "quote": {
+    "symbol": "IONQ",
+    "price": 63.64,
+    "sector": null,
+    "industry": null,
+    "market_cap": 23750000000.0,
+    "volume": 52359976.0,
+    "avg_volume": 29100000.0,
+    "rel_volume": 1.8,
+    "sma20": 25.55,
+    "sma50": 55.38,
+    "sma200": 34.44,
+    "week_52_high": 84.64,
+    "week_52_low": 25.89,
+    "inst_own": 55.55,
+    "insider_own": 2.5,
+    "insider_trans": -0.37,
+    "short_float": 23.0,
+    "target_price": 69.95,
+    "recom": 1.31,
+    "beta": 3.08,
+    "eps_next_y": -1.83,
+    "eps_next_q": -0.54,
+    "earnings_date": "May 06 AMC",
+    "news": [
+      {
+        "time": "May-22-26 09:27AM",
+        "headline": "How QBTS Stock Rises 10x To $250",
+        "source": "Trefis"
+      },
+      {
+        "time": "04:04AM",
+        "headline": "RGTI Vs QBTS Vs INFQ Vs IONQ: Which Quantum Computing Stock Is Retail Most Bullish On?",
+        "source": "Stocktwits"
+      },
+      {
+        "time": "May-21-26 11:20PM",
+        "headline": "QBTS, INFQ, RGTI Stocks Explode: Quantum Rally Adds Nearly $5B In Market Cap On Trump Admins Major Bet But Retail Is Very Divided",
+        "source": "Stocktwits"
+      },
+      {
+        "time": "03:09PM",
+        "headline": "D-Wave, Rigetti, IBM Lead Quantum stocks Rally After Trump pours $2B into quantum chip",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "01:00PM",
+        "headline": "U.S. Awards $2 Billion to Nine Quantum Computing Companies",
+        "source": "Oilprice.com"
+      },
+      {
+        "time": "07:04AM",
+        "headline": "IBM and Quantum Stocks Jump on Trump Administration Funding Pact. What We Know.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "03:00AM",
+        "headline": "This Wall Street Veteran Thinks Quantum Is More Than a Speculative Bet. Sizing Up the Stocks.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "May-20-26 04:20PM",
+        "headline": "This Quantum Player Just Went Public. It's Already Launching Technology Into Space.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "May-19-26 11:28AM",
+        "headline": "Xanadus Revenue Climbs 4x as Quantum Roadmap Gains Traction Quarterly Update Report",
+        "source": "Exec Edge"
+      },
+      {
+        "time": "May-15-26 06:08AM",
+        "headline": "IonQ and 5 More Stocks to Play Quantum Fever",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "03:45AM",
+        "headline": "There's No End in Sight to the Quantum Fever. 6 Stocks to Watch.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "May-14-26 04:18PM",
+        "headline": "These Quantum Leaders Are Going Public. Their Paths to the Market Couldn't Be More Different.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "May-13-26 09:29AM",
+        "headline": "How Low Can IONQ Stock Go?",
+        "source": "Trefis"
+      },
+      {
+        "time": "May-12-26 12:04PM",
+        "headline": "Quantum Computing stock surges after revenue beat",
+        "source": "Yahoo Finance"
+      },
+      {
+        "time": "07:24AM",
+        "headline": "D-Wave Quantum Revenue Plunges 81%. Why the Stock Is Heading Higher After Earnings.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "05:20AM",
+        "headline": "This Quantum Stock Has Been a Laggard. Why Shares Are Up 16% After Earnings.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "May-11-26 06:51PM",
+        "headline": "This Quantum Stock Has Been a Laggard. Why Shares Are Up 14% After Earnings.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "05:49PM",
+        "headline": "Rigetti Computing Revenue Triples. Why the Quantum Stock Is Falling.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "01:50PM",
+        "headline": "IonQ stock jumps as SkyWater deal clears shareholder vote",
+        "source": "Yahoo Finance"
+      },
+      {
+        "time": "10:53AM",
+        "headline": "These Quantum Companies Post Earnings This Week. Expect More Innovation and Less Profit.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "03:00AM",
+        "headline": "The King's Foundation and FormationQ Launch \"Harmonious Urban Growth\" Programme to Help Cities Plan Sustainable Expansion Using Quantum Optimisation",
+        "source": "PR Newswire"
+      },
+      {
+        "time": "May-08-26 01:50PM",
+        "headline": "Nasdaq, S&P 500 Enjoy Another Record-Breaking Week",
+        "source": "Schaeffer's Research"
+      },
+      {
+        "time": "May-07-26 06:30PM",
+        "headline": "Horizon Quantum Deepens Infrastructure Strategy as Hardware Ecosystem Expands Quarterly Update Report",
+        "source": "Exec Edge"
+      },
+      {
+        "time": "04:44PM",
+        "headline": "IonQ CEO Niccolo de Masi on biggest quantum themes from its Q1 earnings",
+        "source": "Quartz"
+      },
+      {
+        "time": "10:03AM",
+        "headline": "IonQ, 'Nvidia Of Quantum,' Drops After Report",
+        "source": "Investor's Business Daily"
+      },
+      {
+        "time": "09:45AM",
+        "headline": "Why IonQ Stock Is Down Today",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "09:21AM",
+        "headline": "Quantum Computing Stock Pushes Aside Sales Jump, Outlook",
+        "source": "Schaeffer's Research"
+      },
+      {
+        "time": "08:55AM",
+        "headline": "NYSE Content Update: HawkEye 360 to Start Trading after its $416 Million IPO",
+        "source": "PR Newswire"
+      },
+      {
+        "time": "08:53AM",
+        "headline": "Why IONQ Stock Owns The Quantum Runway",
+        "source": "Trefis"
+      },
+      {
+        "time": "May-06-26 07:08PM",
+        "headline": "Quantum computing firm IonQ raises annual revenue forecast",
+        "source": "Reuters"
+      },
+      {
+        "time": "05:46PM",
+        "headline": "IonQ Doubles Down on Nvidia Comparison. Why the Stock Is Falling After Blowout Earnings.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "04:31PM",
+        "headline": "IonQ Reports Smaller-Than-Expected Loss, Revenue Tops Estimates Amid Acquisitions",
+        "source": "Investor's Business Daily"
+      },
+      {
+        "time": "04:05PM",
+        "headline": "IonQ Announces First Quarter 2026 Financial Results",
+        "source": "Business Wire"
+      },
+      {
+        "time": "01:16PM",
+        "headline": "Quantum's Risks Are Overstated-and the Investment Opportunity May Be Underestimated",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "05:27AM",
+        "headline": "Walt Disney headlines earnings slate",
+        "source": "MarketWatch"
+      },
+      {
+        "time": "May-05-26 01:01PM",
+        "headline": "This Quantum Newcomer Just Posted Earnings. Meet Horizon, the Industry's First Public Software Play.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "10:11AM",
+        "headline": "Quantum Computing Stocks: IonQ Kicks Off Earnings Reports Amid Acquisition Spree",
+        "source": "Investor's Business Daily"
+      },
+      {
+        "time": "09:28AM",
+        "headline": "How IONQ Stock Rises 10x To $500",
+        "source": "Trefis"
+      },
+      {
+        "time": "07:49AM",
+        "headline": "IonQ Earnings Due May 6: Big Promises, Bigger Expectations",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "May-04-26 03:56PM",
+        "headline": "Quantum Panic Didnt Crash BitcoinSo What Did? Grayscale Reveals the Real Trigger",
+        "source": "BeInCrypto"
+      },
+      {
+        "time": "01:31PM",
+        "headline": "Morgan Stanley Lifts Targets on Semiconductor Stocks",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "08:00AM",
+        "headline": "IonQ Launches Commercial InSAR Capability, Enabling Automated, Millimeter-Scale Earth Monitoring",
+        "source": "Business Wire"
+      },
+      {
+        "time": "Apr-30-26 02:29PM",
+        "headline": "From Intel to Nvidia, Tech CEOs Are Embracing Quantum. Why It Matters.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "Apr-27-26 08:00AM",
+        "headline": "IonQ and Florida LambdaRail Launch First Statewide Quantum-Safe Network Initiative in United States",
+        "source": "Business Wire"
+      },
+      {
+        "time": "Apr-22-26 03:00PM",
+        "headline": "IonQ Publishes Definitive Technical Report, Establishing Its Fault-Tolerant Quantum Computing Trajectory - Setting a New Standard for Technical Specificity and Transparency",
+        "source": "Business Wire"
+      },
+      {
+        "time": "01:44PM",
+        "headline": "Quantum computing poised to displace classical AI infrastructure, Northland says",
+        "source": "Investing.com"
+      },
+      {
+        "time": "Apr-21-26 03:34PM",
+        "headline": "Quantum Momentum Builds. Why IonQ and Xanadu Stocks Are This Analyst's Top Picks.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "06:37AM",
+        "headline": "The top 10 most shorted stocks in the U.S.",
+        "source": "MarketWatch"
+      },
+      {
+        "time": "Apr-20-26 01:56PM",
+        "headline": "SPACs Are Back. Why So Many Quantum Companies Are Going Public.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "09:33AM",
+        "headline": "Qorvo downgraded, Ulta Beauty upgraded: Wall Street's top analyst calls",
+        "source": "The Fly"
+      },
+      {
+        "time": "Apr-17-26 03:50PM",
+        "headline": "Quantum Stocks Had a Blowout Week. IonQ, Infleqtion, and Other Names to Watch.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "Apr-16-26 05:23AM",
+        "headline": "Allbirds stock dives after spike, and other early market movers",
+        "source": "MarketWatch"
+      },
+      {
+        "time": "Apr-15-26 03:04PM",
+        "headline": "Are Quantum Stocks Back? The Sector is Rallying",
+        "source": "Schaeffer's Research"
+      },
+      {
+        "time": "02:13PM",
+        "headline": "Quantum Computing Stocks Are Surging. New Models From Nvidia Are Helping Drive the Rally.",
+        "source": "Investopedia"
+      },
+      {
+        "time": "11:04AM",
+        "headline": "Quantum stocks extend their gains. Why Nvidia's new models could give the industry a boost.",
+        "source": "MarketWatch"
+      },
+      {
+        "time": "10:05AM",
+        "headline": "Nvidia Move Sparks Unexpected Quantum Stock Rally",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "09:13AM",
+        "headline": "Quantum Computing Stocks Surge After Nvidia's Game-Changing AI Move",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "08:00AM",
+        "headline": "IonQ to Report First Quarter 2026 Financial Results on May 6, 2026",
+        "source": "Business Wire"
+      },
+      {
+        "time": "06:19AM",
+        "headline": "Quantum stocks surge as Nvidia launches new AI models",
+        "source": "Investing.com"
+      },
+      {
+        "time": "Apr-14-26 03:40PM",
+        "headline": "Nvidia Expands AI Push With Quantum Models",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "02:02PM",
+        "headline": "D-Wave CEO says Nvidia should be 'shaking in their boots' as quantum computing battles AI GPUs",
+        "source": "Yahoo Finance"
+      },
+      {
+        "time": "01:16PM",
+        "headline": "It's Anyone's Game: What China's Five-Year Plan Means for Quantum Computing",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "12:22PM",
+        "headline": "Quantum-computing stocks are soaring on Tuesday after Nvidia launches new quantum AI models",
+        "source": "MarketWatch"
+      },
+      {
+        "time": "12:20PM",
+        "headline": "Why IonQ (IONQ) Shares Just Popped 20% Tuesday",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "09:25AM",
+        "headline": "IonQ Achieves Key Photonic Interconnect Milestone, Demonstrating Networked Quantum Systems Using Entanglement",
+        "source": "Business Wire"
+      },
+      {
+        "time": "09:15AM",
+        "headline": "IonQ Selected for DARPAs Heterogeneous Architectures for Quantum (HARQ) Program",
+        "source": "Business Wire"
+      },
+      {
+        "time": "08:55AM",
+        "headline": "NYSE Content Update: OpenLoop Health Debuts At-Home Sleep Apnea Test with 98% Accuracy",
+        "source": "PR Newswire"
+      },
+      {
+        "time": "Apr-13-26 06:08PM",
+        "headline": "Xanadu Becomes Public, Eyes Quantum Commercialization: Quarterly Update Report",
+        "source": "Exec Edge"
+      },
+      {
+        "time": "05:17PM",
+        "headline": "IonQ and University of Maryland Expand QLab Collaboration to Advance Quantum Networking and Research",
+        "source": "Business Wire"
+      },
+      {
+        "time": "Apr-09-26 07:00AM",
+        "headline": "Horizon Quantum and IonQ Enter into Strategic Agreement to Unlock Quantum Potential",
+        "source": "Business Wire"
+      },
+      {
+        "time": "Apr-08-26 09:35AM",
+        "headline": "Why Rigetti's New Cepheus System Clears a Path for a Higher Stock Price",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "07:32AM",
+        "headline": "Rigetti Computing Stock Jumps. Why Its Most Powerful Quantum System Has Wall Street Excited.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "Apr-07-26 02:06PM",
+        "headline": "IonQ, D-Wave, Rigetti stocks tumble as Mizuho slashes price targets by 25%",
+        "source": "GuruFocus.com"
+      },
+      {
+        "time": "Mar-31-26 08:07PM",
+        "headline": "What's Driving IONQ's Strong and Robust 2026 Outlook?",
+        "source": "Quartz"
+      },
+      {
+        "time": "Mar-30-26 05:36PM",
+        "headline": "This Stock Popped 15% in Its Trading Debut. Meet Quantum's New Kid on the Block.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "Mar-23-26 11:15AM",
+        "headline": "Xanadu: Rare Public Debut March 27 of Full-Stack Photonic Quantum Company Initiation Report",
+        "source": "Exec Edge"
+      },
+      {
+        "time": "Mar-17-26 08:20AM",
+        "headline": "U.K. to Spend $2.5 Billion on Quantum Computing. What It Means for IonQ Stock.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "Mar-16-26 04:30PM",
+        "headline": "IonQ and KISTI Forge Strategic Alliance to Advance Quantum-HPC Hybrid Technologies in South Korea with NVIDIA NVQLink",
+        "source": "Business Wire"
+      },
+      {
+        "time": "Mar-13-26 01:59PM",
+        "headline": "IonQ Just Secured a Deal with the University of Cambridge. Should You Buy the Quantum Computing Stock Here?",
+        "source": "Barchart"
+      },
+      {
+        "time": "Mar-11-26 05:08PM",
+        "headline": "REPLAY: Fireside Chat with Xanadu Founder & CEO Christian Weedbrook",
+        "source": "IPO-Edge.com"
+      },
+      {
+        "time": "06:00AM",
+        "headline": "IonQ and the University of Cambridge Announce Landmark Agreement to Establish Innovation Centre for Quantum Technology Commercialization",
+        "source": "Business Wire"
+      },
+      {
+        "time": "Mar-10-26 02:37PM",
+        "headline": "IonQ Partners With Applied Research Lab To Advance Quantum Computing Security",
+        "source": "Benzinga"
+      },
+      {
+        "time": "08:07AM",
+        "headline": "IonQ Tripled Revenue but Its Stock Is Down 22%",
+        "source": "24/7 Wall St."
+      },
+      {
+        "time": "08:00AM",
+        "headline": "IonQ and ARLIS Partner to Establish Zero Trust Security Framework for Mission-Critical Quantum Architectures",
+        "source": "Business Wire"
+      },
+      {
+        "time": "Mar-09-26 04:08PM",
+        "headline": "Join Roberts & Ryan Geopolitical Update: Q-Day Quantum Computing & Encryption Vulnerabilities Mar 13, 12:30PM ET",
+        "source": "Exec Edge"
+      },
+      {
+        "time": "01:06PM",
+        "headline": "Can Rigetti's Technology Breakthroughs Accelerate Quantum Progress?",
+        "source": "Zacks"
+      },
+      {
+        "time": "Mar-07-26 07:00AM",
+        "headline": "MarketBeat Week in Review - 03/02 - 03/06",
+        "source": "MarketBeat"
+      },
+      {
+        "time": "Mar-06-26 12:41PM",
+        "headline": "Why Earnings From Quantum Pure-Plays Like IonQ Have Wall Street Salivating So Much",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "11:06AM",
+        "headline": "Game on for HQ: Quantum Computing Powerhouse Set to Go Public Initiation Report",
+        "source": "Exec Edge"
+      },
+      {
+        "time": "11:00AM",
+        "headline": "Quantum Threats Are Real. These Companies Are Building the Fix",
+        "source": "PR Newswire"
+      },
+      {
+        "time": "08:24AM",
+        "headline": "Quantum Computing's Major Growth Catalysts Heading Into 2026",
+        "source": "Zacks"
+      },
+      {
+        "time": "07:33AM",
+        "headline": "Earnings From Quantum Pure-Plays Like IonQ Have Wall Street Salivating Over Their Growth Prospects",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "Mar-05-26 01:43PM",
+        "headline": "Rigetti Computing Falls After Earnings. The Quantum Stock Faces Key Challenges.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "04:45AM",
+        "headline": "Rigetti Computing Stock Falls After Earnings. The Quantum Pure Play Faces Key Challenges.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "Mar-04-26 04:31PM",
+        "headline": "Rigetti Computing Stock Falls After Earnings. The Quantum Pure Play Faces Key Challenges.",
+        "source": "Barrons.com"
+      },
+      {
+        "time": "08:20AM",
+        "headline": "D-Wave Quantum's Q4 Bookings Fall Y/Y: How Does the Year Ahead Look?",
+        "source": "Zacks"
+      },
+      {
+        "time": "Mar-03-26 10:37PM",
+        "headline": "Reflecting On Hardware & Infrastructure Stocks' Q4 Earnings: IonQ (NYSE:IONQ)",
+        "source": "StockStory"
+      },
+      {
+        "time": "04:34PM",
+        "headline": "Does IonQ's Standout Earnings Give It an Advantage Over D-Wave?",
+        "source": "MarketBeat"
+      },
+      {
+        "time": "03:51PM",
+        "headline": "Dear Rigetti Computing Stock Fans, Mark Your Calendars for March 4",
+        "source": "Barchart"
+      },
+      {
+        "time": "01:00PM",
+        "headline": "Is IonQ Stock the Tesla of Quantum Computing?",
+        "source": "Barchart"
+      }
+    ]
+  },
+  "stage2": {
+    "tier": "Standard",
+    "score": 5.0,
+    "hp_left": 6,
+    "kills": [
+      "Execution impaired: spread $0.35, volume 49,138, OI 54,090"
+    ],
+    "flags": [
+      "2 meme signals: meme/retail headline language, weak/negative forward EPS",
+      "Hold/modest upside profile (9.9%)"
+    ],
+    "summary_verdict": "NO ENTRY"
+  },
+  "stage3": {
+    "category": "B",
+    "discount_rate": 0.15,
+    "scenario_weights": {
+      "bear": 0.42,
+      "realistic": 0.46,
+      "bull": 0.12
+    },
+    "bull": 3.232942877716414,
+    "realistic": 1.2609043829413564,
+    "bear": 0.46548645406280564,
+    "weighted_fair_value": 1.1634734721853721,
+    "mos_threshold": 0.5817367360926861,
+    "current_price": 63.64,
+    "undervaluation_pct": -98.17178901290796,
+    "watch_signal": "Next revenue step-down below 50% YoY or cash runway under 18 months",
+    "share_count_source": "sec",
+    "share_qc_detail": null,
+    "key_facts": {
+      "revenue": 130016000.0,
+      "previous_revenue": 43073000.0,
+      "net_income": 805360000.0,
+      "op_income": -271507000.0,
+      "op_cash_flow": -151024000.0,
+      "cash": 493538000.0,
+      "shares": 373171320.0,
+      "shares_source": "sec",
+      "shares_note": null,
+      "growth": 2.01850347085181,
+      "fcf_proxy_margin": -1.1615801132168349
+    },
+    "scenarios": {
+      "bull": [
+        {
+          "year": 1,
+          "revenue": 234028800.0,
+          "fcf": -93611520.0,
+          "margin": -0.4,
+          "growth": 0.8
+        },
+        {
+          "year": 2,
+          "revenue": 374446080.0,
+          "fcf": -56166912.0,
+          "margin": -0.15,
+          "growth": 0.6
+        },
+        {
+          "year": 3,
+          "revenue": 542946816.0,
+          "fcf": 0.0,
+          "margin": 0.0,
+          "growth": 0.45
+        },
+        {
+          "year": 4,
+          "revenue": 705830860.8000001,
+          "fcf": 49408160.25600001,
+          "margin": 0.07,
+          "growth": 0.3
+        },
+        {
+          "year": 5,
+          "revenue": 846997032.96,
+          "fcf": 101639643.9552,
+          "margin": 0.12,
+          "growth": 0.2
+        }
+      ],
+      "realistic": [
+        {
+          "year": 1,
+          "revenue": 208025600.0,
+          "fcf": -104012800.0,
+          "margin": -0.5,
+          "growth": 0.6
+        },
+        {
+          "year": 2,
+          "revenue": 301637120.0,
+          "fcf": -90491136.0,
+          "margin": -0.3,
+          "growth": 0.45
+        },
+        {
+          "year": 3,
+          "revenue": 392128256.0,
+          "fcf": -47055390.72,
+          "margin": -0.12,
+          "growth": 0.3
+        },
+        {
+          "year": 4,
+          "revenue": 470553907.2,
+          "fcf": -14116617.216,
+          "margin": -0.03,
+          "growth": 0.2
+        },
+        {
+          "year": 5,
+          "revenue": 541136993.28,
+          "fcf": 27056849.664,
+          "margin": 0.05,
+          "growth": 0.15
+        }
+      ],
+      "bear": [
+        {
+          "year": 1,
+          "revenue": 182022400.0,
+          "fcf": -109213440.0,
+          "margin": -0.6,
+          "growth": 0.4
+        },
+        {
+          "year": 2,
+          "revenue": 227528000.0,
+          "fcf": -102387600.0,
+          "margin": -0.45,
+          "growth": 0.25
+        },
+        {
+          "year": 3,
+          "revenue": 273033600.0,
+          "fcf": -95561760.0,
+          "margin": -0.35,
+          "growth": 0.2
+        },
+        {
+          "year": 4,
+          "revenue": 313988640.0,
+          "fcf": -87916819.2,
+          "margin": -0.28,
+          "growth": 0.15
+        },
+        {
+          "year": 5,
+          "revenue": 345387504.0,
+          "fcf": -69077500.8,
+          "margin": -0.2,
+          "growth": 0.1
+        }
+      ]
+    }
+  }
+}

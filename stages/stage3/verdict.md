@@ -1,6 +1,6 @@
 # Stage 3 Verdict
 
-**Last updated (UTC):** 2026-05-25T21:26:51Z
+**Last updated (UTC):** 2026-05-26T02:16:14Z
 
 ## Runner build status
 
@@ -28,14 +28,39 @@ with human-readable and JSONL audit logs under:
 stages/stage3/audit_logs/
 ```
 
-## Post-remediation validation
+## Current realignment status
 
-`screener.py` BUG-1 and BUG-2 are now remediated:
+`run_stage3.py` is mechanically healthy, but `Stage3_Report.csv` should currently be treated as a **mechanical baseline valuation screen**, not as the final user-facing Stage 3 fair-value report for every business model.
 
-- SEC revenue extraction supports fallback tags and prefers annual rows when available.
-- Stage 3 share sanity is directional: low DCF-implied market cap is a valid overvaluation result, while high model-implied market cap still trips denominator QC.
+The user flagged implausibly low weighted fair values for familiar names such as IONQ and MARA. Review confirmed real source/model issues and produced this audit note:
+
+```text
+stages/stage3/audit_logs/stage3_price_fair_value_realign_20260526T021614Z.md
+```
+
+## Fixes implemented after the price/fair-value review
+
+`screener.py` remediation now includes:
+
+- Revenue tag selection considers all annual revenue tags, picks the most recent annual tag, and uses the broadest/largest tag when multiple current-year annual tags exist. This fixes MARA being valued from a narrow revenue tag instead of total `Revenues`.
+- Flow facts (`NetIncomeLoss`, `OperatingIncomeLoss`, `NetCashProvidedByUsedInOperatingActivities`) prefer annual rows so annual revenue is not mixed with a latest-quarter flow figure.
+- Post-valuation market-cap comparison no longer creates `QC FAIL`; share sanity belongs in the direct SEC-shares vs market-cap-implied-shares check before valuation. A fair value above market cap is a valuation signal, not a denominator failure.
 
 Validation command:
+
+```bash
+PYTHONPATH=/home/hermes/market-funnel pytest -q tests/test_screener.py tests/test_stage3_runner.py
+```
+
+Result:
+
+```text
+30 passed, 3 subtests passed
+```
+
+## Latest Stage 3 regeneration
+
+Command:
 
 ```bash
 python -u -m stages.stage3.code.run_stage3 \
@@ -50,13 +75,10 @@ Artifacts:
 
 ```text
 stages/stage3/output/Stage3_Report.csv
-stages/stage3/audit_logs/stage3_run_20260525T212651Z.log
-stages/stage3/audit_logs/stage3_run_20260525T212651Z.jsonl
-stages/stage3/audit_logs/stage3_operator_screener_fix_cascade_20260525T212651Z.log
-stages/stage3/audit_logs/stage3_screener_fix_handoff_20260525T212651Z.md
+stages/stage3/audit_logs/stage3_run_20260526T021614Z.log
+stages/stage3/audit_logs/stage3_run_20260526T021614Z.jsonl
+stages/stage3/audit_logs/stage3_price_fair_value_realign_20260526T021614Z.md
 ```
-
-## Latest results
 
 Processed tiers:
 
@@ -73,10 +95,17 @@ Rows processed:
 Verdict count:
 
 ```json
-{"NO ENTRY": 16, "QC FAIL": 5}
+{"NO ENTRY": 17, "DIAMOND": 1, "QC FAIL": 2, "ENTRY": 1}
 ```
 
-Diamond symbols:
+Actionable mechanical outputs surfaced:
+
+```text
+CLSK  DIAMOND  Category A  FV 21.10  MOS 16.88  Price 15.97
+PATH  ENTRY    Category A  FV 14.00  MOS 11.20  Price 10.93
+```
+
+Diamond symbols processed:
 
 ```text
 MARA, CLSK, PCT, QUBT, USAR, UUUU
@@ -85,15 +114,23 @@ MARA, CLSK, PCT, QUBT, USAR, UUUU
 Diamond verdict count:
 
 ```json
-{"NO ENTRY": 6}
+{"NO ENTRY": 5, "DIAMOND": 1}
 ```
 
-Strong was processed because Diamond produced 0 actionable `DIAMOND + ENTRY` names versus the threshold of 5.
+Strong was processed because Diamond produced 1 actionable `DIAMOND + ENTRY` name versus the threshold of 5.
 
 ## Current decision
 
 **Runner mechanics:** GREEN  
-**screener.py remediation:** GREEN  
-**Valuation output:** GREEN, with no actionable entries found in Diamond or Strong
+**Source alignment fixes:** PARTIAL GREEN  
+**Generic DCF baseline:** USABLE FOR TRIAGE  
+**Final fair-value methodology:** NOT FULLY REALIGNED
 
-The latest output is a valid sieve result: Diamond no longer source/QC-fails, but none of the tested Diamond or Strong names trade below the Stage 3 margin-of-safety threshold.
+The generic Stage 3 DCF now has better source alignment, but it is still not sufficient as the sole fair-value engine for all names. Stage 3 needs model-family routing before final user-facing fair values should be trusted for:
+
+- crypto miners / BTC-NAV-sensitive names such as MARA, RIOT, CLSK, WULF, IREN,
+- deep-tech / milestone names such as IONQ, RGTI, QBTS, QUBT,
+- HIMS, which needs the HIMS-specific Category A paradox / patent-risk overlay,
+- other names where Stage 2 `one_yr_target` materially diverges from mechanical Stage 3 FV.
+
+Next required engineering work: add `one_yr_target` to Stage 3 output, add target-vs-model divergence flags, and route tickers to model families instead of forcing every name through the same generic FCF DCF.

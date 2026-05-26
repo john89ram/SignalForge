@@ -414,11 +414,23 @@ def load_sec_companyfacts(http: HTTP, symbol: str) -> Optional[SECFacts]:
             rows.append((when, float(val), is_annual))
         return rows
 
-    def collect_fact(fact_name: str, collector: List[Tuple[str, float]]) -> bool:
+    def collect_fact(fact_name: str, collector: List[Tuple[str, float]], *, prefer_annual: bool = False) -> bool:
         rows = fact_rows(fact_name)
+        if prefer_annual:
+            annual_rows = [(when, value) for when, value, is_annual in rows if is_annual]
+            if annual_rows:
+                collector.extend(annual_rows)
+                return True
         collector.extend((when, value) for when, value, _is_annual in rows)
         return bool(rows)
 
+    # Revenue tag choice is not just a fixed-priority fallback. Some filers expose
+    # a narrow contract-revenue tag and a broader total `Revenues` tag for the
+    # same fiscal year (MARA is a live example). Pick the most recent annual tag;
+    # when several tags share that latest annual date, use the largest value as
+    # the best proxy for total company revenue. This keeps IONQ on its current
+    # contract-revenue tag while avoiding MARA's understated mining-pool fee tag.
+    revenue_candidates: List[Tuple[str, List[Tuple[str, float]]]] = []
     fallback_revenue_rows: List[Tuple[str, float]] = []
     for fact_name in revenue_tags:
         rows = fact_rows(fact_name)
@@ -426,21 +438,31 @@ def load_sec_companyfacts(http: HTTP, symbol: str) -> Optional[SECFacts]:
             continue
         annual_rows = [(when, value) for when, value, is_annual in rows if is_annual]
         if annual_rows:
-            out.revenue.extend(annual_rows)
-            break
-        if not fallback_revenue_rows:
+            annual_rows.sort(key=lambda x: x[0])
+            revenue_candidates.append((fact_name, annual_rows))
+        elif not fallback_revenue_rows:
             fallback_revenue_rows = [(when, value) for when, value, _is_annual in rows]
-    if not out.revenue:
+    if revenue_candidates:
+        latest_date = max(rows[-1][0] for _fact_name, rows in revenue_candidates)
+        same_latest = [(fact_name, rows) for fact_name, rows in revenue_candidates if rows[-1][0] == latest_date]
+        _selected_name, selected_rows = max(same_latest, key=lambda item: item[1][-1][1])
+        out.revenue.extend(selected_rows)
+    else:
         out.revenue.extend(fallback_revenue_rows)
 
-    extract_map = {
+    flow_extract_map = {
         "NetIncomeLoss": out.net_income,
         "OperatingIncomeLoss": out.op_income,
         "NetCashProvidedByUsedInOperatingActivities": out.op_cash_flow,
+    }
+    for fact_name, collector in flow_extract_map.items():
+        collect_fact(fact_name, collector, prefer_annual=True)
+
+    point_extract_map = {
         "CashAndCashEquivalentsAtCarryingValue": out.cash,
         "CommonStockSharesOutstanding": out.shares,
     }
-    for fact_name, collector in extract_map.items():
+    for fact_name, collector in point_extract_map.items():
         collect_fact(fact_name, collector)
 
     # sort by date string; SEC date strings are yyyy-mm-dd, so lexicographic works.
@@ -725,24 +747,11 @@ def _apld_forward_buildout_stage3(analysis: TickerAnalysis) -> Optional[Dict[str
     )
     mos_threshold = 0.50 * weighted
 
+    # Share-count sanity belongs in `stage3_share_count()` where SEC shares can be
+    # compared directly with market-cap-implied shares. Do not QC-fail here just
+    # because the valuation-implied equity value differs from the quoted market
+    # cap; that difference is the valuation signal Stage 3 is trying to produce.
     share_qc_detail = None
-    if q.market_cap is not None and q.market_cap > 0:
-        implied_mktcap = weighted * shares
-        upside_delta = (implied_mktcap - q.market_cap) / q.market_cap
-        if upside_delta > 0.20:
-            share_qc_detail = (
-                f"implied ${implied_mktcap / 1e9:.2f}B vs "
-                f"known ${q.market_cap / 1e9:.2f}B ({upside_delta * 100:.1f}%)"
-            )
-            return {
-                "verdict": "QC FAIL",
-                "qc_fail_reason": f"share denominator sanity failed: {share_qc_detail}",
-                "category": "B",
-                "share_count_source": share_source,
-                "share_qc_detail": share_qc_detail,
-                "weighted_fair_value": None,
-                "mos_threshold": None,
-            }
 
     return {
         "category": "B",
@@ -901,21 +910,11 @@ def stage3_analysis(analysis: TickerAnalysis) -> Optional[Dict[str, Any]]:
     )
     mos_threshold = 0.80 * weighted if category == "A" else 0.50 * weighted
 
+    # Share-count sanity belongs in `stage3_share_count()` where SEC shares can be
+    # compared directly with market-cap-implied shares. Do not QC-fail here just
+    # because the valuation-implied equity value differs from the quoted market
+    # cap; that difference is the valuation signal Stage 3 is trying to produce.
     share_qc_detail = None
-    if q.market_cap is not None and q.market_cap > 0:
-        implied_mktcap = weighted * shares
-        upside_delta = (implied_mktcap - q.market_cap) / q.market_cap
-        if upside_delta > 0.20:
-            share_qc_detail = (
-                f"implied ${implied_mktcap / 1e9:.2f}B vs "
-                f"known ${q.market_cap / 1e9:.2f}B ({upside_delta * 100:.1f}%)"
-            )
-            return qc_fail(
-                f"share denominator sanity failed: {share_qc_detail}",
-                category=category,
-                share_source=share_source,
-                share_qc_detail=share_qc_detail,
-            )
 
     watch_signal = (
         "Close below the 50-day SMA by 5% on elevated volume"
