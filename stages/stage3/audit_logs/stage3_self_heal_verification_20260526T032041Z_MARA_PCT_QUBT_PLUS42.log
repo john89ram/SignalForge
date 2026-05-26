@@ -1,0 +1,13 @@
+Stage 3 self-heal verification log
+trigger_id=20260526T032041Z_MARA_PCT_QUBT_PLUS42
+report=/home/hermes/market-funnel/stages/stage3/output/Stage3_Report.csv
+affected_symbols=45
+original_software_patch_required_true=45
+patched_simulated_software_patch_required_true=0
+classification_counts={"MODEL_FAMILY_MISSING": 23, "DATA_PROVIDER_ISSUE": 12, "NO_PATCH_SAFE": 7, "TARGET_OUTLIER": 3}
+og_path=stages/stage3/code/patches/20260526T032041Z_MARA_PCT_QUBT_PLUS42/original/run_stage3__og_20260526T032041Z_MARA_PCT_QUBT_PLUS42.py
+patched_path=stages/stage3/code/patches/20260526T032041Z_MARA_PCT_QUBT_PLUS42/patched/run_stage3__patched_20260526T032041Z_MARA_PCT_QUBT_PLUS42.py
+test_command=pytest tests/test_stage3_runner.py tests/test_stage3_self_heal.py tests/test_screener.py tests/test_stage3_patch_bundle_20260526T032041Z.py -q
+test_result=39 passed, 3 subtests passed
+production_stage3_files_changed=false
+promotion_status=not_promoted
