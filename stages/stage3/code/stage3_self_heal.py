@@ -97,11 +97,19 @@ Remediation instructions:
 - Inspect Stage 3 source data and code before changing anything.
 - Classify each issue as SOURCE_BUG, MODEL_FAMILY_MISSING, DATA_PROVIDER_ISSUE, SHARE_DENOMINATOR_BUG, TARGET_OUTLIER, or NO_PATCH_SAFE.
 - patch only if warranted by a confirmed software/model gap; do not force valuations to match targets.
-- Prefer branch-based or minimal code edits for material model changes.
-- Add or update regression tests for any code change.
+- Do not overwrite OG Stage 3 code during self-heal remediation.
+- Use this non-overwrite naming scheme for every code patch:
+  - Define trigger_id as the current UTC timestamp plus the affected-symbol slug, e.g. 20260526T031500Z_MARA_QUBT.
+  - Create a patch bundle directory: stages/stage3/code/patches/<trigger_id>/.
+  - Copy the original file before edits to: stages/stage3/code/patches/<trigger_id>/original/<original_stem>__og_<trigger_id>.py.
+  - Save the patched code as a new file named: stages/stage3/code/patches/<trigger_id>/patched/<original_stem>__patched_<trigger_id>.py.
+  - Leave the original production file unchanged unless Jonathan explicitly promotes the patch later.
+  - Record the OG path, patched path, trigger_id, and symbol list in the audit handoff.
+- Prefer branch-based or minimal code edits for material model changes, but keep the actual patched code in the patch bundle above.
+- Add or update regression tests for any code change; tests may import the patched module path directly.
 - Run focused tests and rerun Stage 3 enough to verify the software_patch_required rows changed appropriately or are documented as non-code issues.
 - Write audit logs / handoff notes under stages/stage3/audit_logs/.
-- Commit and push safe fixes, then report exactly what changed and what remains human-reviewed.
+- Commit and push safe patch-bundle artifacts, then report exactly what changed and what remains human-reviewed.
 """
 
 

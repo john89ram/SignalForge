@@ -71,6 +71,10 @@ def test_stage3_self_heal_invokes_hermes_for_patch_required_rows(tmp_path):
     assert "MARA" in prompt
     assert "software_patch_required = TRUE" in prompt
     assert "patch only if warranted" in prompt
+    assert "Do not overwrite OG Stage 3 code" in prompt
+    assert "stages/stage3/code/patches/" in prompt
+    assert "<original_stem>__patched_<trigger_id>.py" in prompt
+    assert "<original_stem>__og_<trigger_id>.py" in prompt
     assert kwargs["cwd"] == str(stage3_self_heal.REPO_ROOT)
 
     log_text = Path(result.log_path).read_text(encoding="utf-8")
