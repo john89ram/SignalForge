@@ -547,6 +547,11 @@ def run(
 
     verdict_counts = Counter(row.get("stage3_verdict", "") for row in rows_out)
     actionable_count = sum(verdict_counts.get(verdict, 0) for verdict in ACTIONABLE_VERDICTS)
+    software_patch_required_symbols = [
+        str(row.get("symbol", "")).strip().upper()
+        for row in rows_out
+        if str(row.get("software_patch_required", "")).strip().upper() == "TRUE"
+    ]
     elapsed = round(time.perf_counter() - start, 3)
     summary = {
         "event": "stage3_run_complete",
@@ -556,6 +561,8 @@ def run(
         "symbols_processed": len(rows_out),
         "verdicts": dict(verdict_counts),
         "actionable_count": actionable_count,
+        "software_patch_required_count": len(software_patch_required_symbols),
+        "software_patch_required_symbols": software_patch_required_symbols,
         "runtime_seconds": elapsed,
         "output_csv": str(output_path),
     }

@@ -331,6 +331,13 @@ def test_target_misalignment_is_written_to_csv_log_and_jsonl(tmp_path, monkeypat
     ]
     assert symbol_events[0]["software_patch_required"] == "TRUE"
     assert symbol_events[0]["fair_value_target_alignment"] == "SEVERE_MISALIGNMENT"
+    completion_event = [
+        json.loads(line)
+        for line in Path(result.audit_jsonl_path).read_text(encoding="utf-8").splitlines()
+        if json.loads(line).get("event") == "stage3_run_complete"
+    ][0]
+    assert completion_event["software_patch_required_count"] == 1
+    assert completion_event["software_patch_required_symbols"] == ["MARA"]
 
 
 def test_audit_jsonl_contains_all_event_types(tmp_path, monkeypatch):
